@@ -1,0 +1,144 @@
+# ShopPulse — Build Specification
+
+Offline-first, secure digital ledger and POS system for small-to-medium retail shops.
+Modern, high-contrast, glass-panel aesthetic. Production-ready.
+
+---
+
+## 1. Visual Identity & Aesthetic Guidelines
+
+The monochrome constraint from the original brief has been dropped by request, in favor of a Webflow-inspired color system. This changes the character of the app from "restrained ledger" to "confident, modern SaaS tool." Worth knowing going in: full-color CTAs and accent colors will make status states (debt, low stock) visually louder than the grayscale version. That's the intended tradeoff here.
+
+**Theme:** Perfect light and dark mode support.
+- Dark mode: near-black (`#000000`) backgrounds for footer/dark sections, neutral charcoal (`#080808`) for primary dark surfaces
+- Light mode: white (`#FFFFFF`) primary surfaces, off-white (`#F0F0F0` / `#EFEFEF`) for tinted backgrounds
+
+**Color palette (Webflow-inspired):**
+- Primary action / CTA: `#146EF5`, pressed/focus state `#0055D4`
+- Accents (feature highlights, promotions only, not core UI): vibrant purple `#7A3DFF`, pink `#ED52CB`, orange `#FF6B00`
+- Neutral scale: charcoal `#080808` (primary text), dark gray `#5A5A5A` (secondary text), medium gray `#808080` (tertiary/disabled), light gray `#D8D8D8` (borders), extra-light `#F0F0F0` / `#EFEFEF` (surface tints)
+- Status colors, used consistently and never repurposed: success `#00D722`, error `#EE1D36`, warning `#FFAE13`
+- Applied to ShopPulse specifically: primary blue drives all primary buttons and the active nav state; low-stock alerts use warning amber; overdue debt uses error red; successful sale/backup confirmations use success green
+
+**Glass panel system (now color-aware, since monochrome is dropped):**
+- Frosted panels using `backdrop-filter: blur(16-24px)` over a light blue-tinted white or charcoal base, 60-80% opacity, e.g. `rgba(20, 110, 245, 0.06)` tint over the neutral surface, not a flat gray
+- 1px borders in low-opacity white (dark mode) or `#D8D8D8` (light mode)
+- Soft layered shadows per the elevation scale below
+- Fallback: solid background color for browsers without `backdrop-filter` support
+
+**Typography:**
+- Primary (headings, body, UI, buttons, labels): Poppins, falls back to `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`. Free (Google Fonts, SIL OFL), geometric and modern, matches the confident SaaS tone of the Webflow-derived palette.
+- Monospace (currency, metrics, form labels, technical readouts): JetBrains Mono. Keeps numeric columns aligned via tabular figures, independent of the primary font choice.
+- Hierarchy: Display/H1 80px/600, H2 24px/500, H3 20px/600, Body 16px/400, Label 10px/600, Link 14px/500, Button 15.98px/500, Form Label 12px/400 (mono), Input 14px/400
+
+**Icons:** lucide-react exclusively. No emojis anywhere in the interface.
+
+**Interaction and motion:**
+- Transitions on hover/tap/state-change: 150-250ms ease-out, never longer
+- Every action (save, delete, sync, restore) gets immediate visible feedback: loading state, success confirmation, or error message. No silent actions.
+- Respect `prefers-reduced-motion`
+- Empty states guide the user to the next action ("No sales yet today, add your first product to the cart") rather than a bare "No data"
+
+**Mobile:** Responsive desktop layout. On mobile viewports, a slide-out hamburger drawer holds tab navigation, backup/restore controls, and the role switcher. No bottom tab bar, no horizontal scroll overflow.
+
+**Component specifics carried over from the Webflow system:**
+- Primary button: `#146EF5` background, white text, `4px` radius, `12px 20px` padding, hover to `#0055D4` with 1.02x scale
+- Secondary/outline button: white background, `1px solid #D8D8D8` border, charcoal text, hover fills `#F0F0F0`
+- Cards: `24px` padding minimum, `8px` radius, Level 1-2 shadow (`rgba(0,0,0,0.04) 0px 1px 3px` to `rgba(0,0,0,0.08) 0px 2px 8px`)
+- Inputs: `6px` radius, `1px solid #D8D8D8`, focus state `#146EF5` border with a `2px` low-opacity blue outline, no box-shadow
+- Badges: primary badge uses `#146EF5`/white, status badges use the success/error/warning colors above, never repurposed for anything else
+- Spacing scale: 8px base unit, 16-24px component gaps, 40-72px section spacing
+- Shadows stay restrained: Level 1-2 for cards and containers, reserve Level 4 (the layered hero shadow) for modals only, never on buttons or flat elements
+
+---
+
+## 2. Architecture Correction: Framework and Storage
+
+**Framework:** Next.js (App Router), TypeScript, Tailwind CSS. (Corrects the Vite/Next.js conflict in the original spec, Next.js is needed for the server-side Gemini proxy in Tab G anyway.)
+
+**Storage strategy (corrected for actual offline-first behavior):**
+- **Primary store: local SQLite** (via better-sqlite3 or similar), so the app is fully functional with zero network connection
+- Optional cloud sync layer on top (Firestore or any REST backend) for multi-device use, treated as a secondary mirror, not the source of truth
+- All writes (sales, inventory, expenses, debt, void/refund entries) go to SQLite first, sync afterward
+- This matters because Firestore's offline mode is not a true offline-first pattern, it assumes eventual reconnection to Google's infrastructure and needs explicit persistence configuration. If the shop's internet is down for a day, the original "Firestore or SQLite" framing would leave that ambiguous. SQLite-first removes the ambiguity.
+
+**Backup and Restore:**
+- Export: single button bundles the full schema (products, sales, debts, expenses, void/refund history, system state) into a timestamped JSON file, downloaded client-side
+- Import: file input validates and parses the uploaded JSON, then safely rebuilds or merges the local database
+
+---
+
+## 3. Role-Based Permissions
+
+Two configurable roles (not hardcoded names, so this is resellable to other shops without code changes):
+
+**Owner role** (default label "Owner", editable): full access to cost prices, profit metrics, expense dashboards, financial analytics, and void/refund actions.
+
+**Attendant role** (default label "Attendant", editable): restricted access. Profit data, cost prices, and analytics are hidden entirely, not just visually collapsed. Attendant can access selling prices, cart/checkout, and stock-adding only. Attendant cannot void or delete sales.
+
+Role names should be set once in a settings screen, not hardcoded into permission logic. Permission checks reference a `role` enum (`owner` | `attendant`), display names are cosmetic only.
+
+---
+
+## 4. Application Tabs & Features
+
+### Tab A: Overview & Dashboard
+- Today's Total Revenue, Active Debt Accounts, Monthly Expenses, Today's Profit (owner-only, hidden entirely for attendant, not blurred or locked-with-a-teaser)
+- Recharts-based daily revenue chart, primary blue (`#146EF5`) for the main revenue line/bars, neutral grays for gridlines and secondary series
+- Low-stock alerts and recent transactions panel
+
+### Tab B: POS Terminal
+- Catalog with search by name, category, or barcode, instant category filtering
+- Cart panel: quantity adjustment, live price calculation, discount application
+- Payment methods: Cash, Bank Transfer, Card, Credit (writes to debt ledger)
+- Split payments (e.g. cash + transfer) supported as a single transaction with multiple payment lines
+
+### Tab C: Sales Logs
+- Full history: date, transaction type, items, payment method, operator
+- Search and filter
+- **Void/refund, not delete.** Voiding a sale creates a reversing ledger entry and restocks inventory, but the original transaction record stays visible with a "voided" status. This preserves the audit trail. Only the Owner role can void a sale.
+
+### Tab D: Stock & Inventory Manager
+- Master product table: Selling Price, Cost Price (owner-only), Stock Level, Category
+- Load Restock Delivery: log shipments, update quantities and average cost prices
+- Inventory Correction: log damage, loss, or adjustment, with a required reason field (this creates an audit entry too, same principle as sales voids)
+
+### Tab E: Debt & Credit Ledger
+- Customer registry with active balances
+- Create credit customers, record sales as debt, log partial/full payments
+- Per-client ledger card showing full transaction history
+
+### Tab F: Shop Expenses
+- Create, categorize (Rent, Power, Staff, Transport, Logistics, Other), and filter expenses
+- Feeds directly into the Owner's net profit calculation on the dashboard
+
+### Tab G: AI Business Reports
+- Server-side Gemini API client, proxied through a Next.js API route (API key never touches the browser)
+- Processes anonymized daily telemetry (revenue, low-stock counts, category velocity, expense ratios)
+- Returns natural-language recommendations and operational diagnostics
+- Owner-only tab
+
+---
+
+## 5. Technical Requirements
+
+- Next.js (App Router), TypeScript, Tailwind CSS
+- Local SQLite as source of truth, optional sync layer
+- All financial calculations (cost, profit, credit balances) use safe decimal handling, not raw floating-point arithmetic (floating-point rounding errors compound in a ledger over time, use a library like `decimal.js` or integer-cents storage)
+- Full type safety across components, no `any` escape hatches on financial data types
+- Gemini API key and any credentials live server-side only, proxied through API routes
+- Void/refund and inventory-correction actions are logged with a reason and timestamp, never silently discard prior state
+
+---
+
+## Summary of changes from the original spec
+
+| Original | Issue | Fix |
+|---|---|---|
+| "Nextjs" title, "Vite" in requirements | Framework conflict | Standardized on Next.js |
+| Colored glass request + strict monochrome rule | Direct contradiction | Resolved by dropping monochrome, adopted Webflow's full color system (blue-tinted glass, status colors) |
+| WF Visual Sans Variable / Mono | Licensing unconfirmed outside Webflow's own products | Replaced with Poppins (UI) + JetBrains Mono (numeric data), both free |
+| "Firestore or SQLite" | Ambiguous, Firestore isn't true offline-first | SQLite as primary, sync optional |
+| Delete sales record on refund | Destroys audit trail | Void/refund as reversing entry |
+| Hardcoded "Chidi"/"Kunle" names | Not resellable, fragile | Configurable role labels, fixed permission enum |
+| Raw floating-point for money | Rounding errors compound | Decimal-safe or integer-cents arithmetic |

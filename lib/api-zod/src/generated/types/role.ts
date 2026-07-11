@@ -6,6 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
-  status: string;
-}
+export type Role = typeof Role[keyof typeof Role];
+
+
+export const Role = {
+  owner: 'owner',
+  attendant: 'attendant',
+} as const;

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
-  status: string;
-}
+/**
+ * Full JSON export of all shop data, used for backup/restore
+ */
+export interface BackupBundle { [key: string]: unknown }
