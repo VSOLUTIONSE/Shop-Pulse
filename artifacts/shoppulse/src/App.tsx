@@ -1,32 +1,37 @@
+import React from 'react';
+import { Route, Switch, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { AppLayout } from '@/components/layout';
+
+import { Dashboard } from '@/pages/dashboard';
+import { POS } from '@/pages/pos';
+import { Sales } from '@/pages/sales';
+import { Inventory } from '@/pages/inventory';
+import { Customers } from '@/pages/customers';
+import { Expenses } from '@/pages/expenses';
+import { Reports } from '@/pages/reports';
+import { SettingsPage } from '@/pages/settings';
 import NotFound from '@/pages/not-found';
-import { Route, Switch, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
 
-function Home() {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Replit Agent is building...
-        </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Your app will appear here once it's ready.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <AppLayout>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/pos" component={POS} />
+        <Route path="/sales" component={Sales} />
+        <Route path="/inventory" component={Inventory} />
+        <Route path="/customers" component={Customers} />
+        <Route path="/expenses" component={Expenses} />
+        <Route path="/reports" component={Reports} />
+        <Route path="/settings" component={SettingsPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </AppLayout>
   );
 }
 

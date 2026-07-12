@@ -1,0 +1,3 @@
+- [Design subagent daily quota](design-subagent-quota.md) — a design subagent job can be denied mid-run on daily free quota; check its output dir, it often left usable partial/complete work.
+- [Running lib/db scripts directly](db-scripts-need-tsx.md) — schema/index files use extensionless imports; raw `node` (even with type-stripping) fails, use `tsx`.
+- [Gemini model naming](gemini-model-aliases.md) — dated Gemini model ids (e.g. gemini-2.5-flash) can 404 for new API keys even while still listed; prefer `-latest` aliases like gemini-flash-latest.
