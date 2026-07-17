@@ -76,8 +76,13 @@ export default defineSchema({
 
   aiReports: defineTable({
     id: v.number(),
+    title: v.optional(v.string()),
     content: v.string(),
     type: v.optional(v.string()),
+    model: v.optional(v.string()),
+    tokens: v.optional(v.number()),
+    promptTokens: v.optional(v.number()),
+    completionTokens: v.optional(v.number()),
   }).index("by_id_idx", ["id"]),
 
   stockMovements: defineTable({

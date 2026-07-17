@@ -11,7 +11,7 @@ import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, FileText, Lock } from 'lucide-react';
+import { Sparkles, FileText, Lock, Brain, Flame, Gauge } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Fragment } from 'react';
 
@@ -76,9 +76,28 @@ export default function Reports() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 border-border/50 shadow-sm flex flex-col h-[calc(100vh-14rem)]">
           <CardHeader className="border-b border-border/50 bg-muted/10 pb-4">
-            <CardTitle>Latest Analysis</CardTitle>
+            <CardTitle>{latestReport?.title ?? 'Latest Analysis'}</CardTitle>
             {latestReport && (
-              <p className="text-sm text-muted-foreground">Generated on {formatDate(latestReport.createdAt)}</p>
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                <span>{formatDate(latestReport.createdAt)}</span>
+                {latestReport.model && (
+                  <span className="flex items-center gap-1">
+                    <Brain className="w-3 h-3" />
+                    {latestReport.model}
+                  </span>
+                )}
+                {latestReport.tokens != null && (
+                  <span className="flex items-center gap-1">
+                    <Gauge className="w-3 h-3" />
+                    {latestReport.tokens.toLocaleString()} tokens
+                  </span>
+                )}
+                {latestReport.promptTokens != null && latestReport.completionTokens != null && (
+                  <span className="text-muted-foreground/60">
+                    (prompt: {latestReport.promptTokens.toLocaleString()} · completion: {latestReport.completionTokens.toLocaleString()})
+                  </span>
+                )}
+              </div>
             )}
           </CardHeader>
           <ScrollArea className="flex-1">
@@ -120,13 +139,25 @@ export default function Reports() {
                 <div className="divide-y divide-border/50">
                   {reports?.slice(1).map(report => (
                     <div key={report.id} className="p-4 hover:bg-muted/20 transition-colors">
-                      <div className="flex items-center gap-3 mb-2">
-                        <FileText className="w-4 h-4 text-muted-foreground" />
+                      <div className="flex items-center gap-3 mb-1">
+                        <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
                         <span className="font-medium text-sm">{formatDate(report.createdAt)}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-2 italic">
-                        &ldquo;{report.content.substring(0, 100)}...&rdquo;
+                      <p className="text-xs text-muted-foreground/70 line-clamp-1 font-medium mb-1">
+                        {report.title ?? 'Business Report'}
                       </p>
+                      <p className="text-xs text-muted-foreground line-clamp-1 italic">
+                        &ldquo;{report.content.replace(/^#+\s*/g, '').substring(0, 80)}...&rdquo;
+                      </p>
+                      {report.model && (
+                        <div className="flex items-center gap-1 mt-1.5 text-[10px] text-muted-foreground/50">
+                          <Flame className="w-3 h-3" />
+                          {report.model}
+                          {report.tokens != null && (
+                            <> · {report.tokens.toLocaleString()} tokens</>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                   {reports?.length === 1 && (
