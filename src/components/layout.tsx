@@ -51,7 +51,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <Sidebar variant="sidebar" collapsible="icon">
+        <Sidebar variant="inset" collapsible="icon">
           <SidebarHeader className="border-b border-border/50 py-4 px-4">
             <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-primary">
               <Store className="h-6 w-6" />

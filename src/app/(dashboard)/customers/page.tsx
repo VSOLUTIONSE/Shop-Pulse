@@ -82,7 +82,7 @@ export default function Customers() {
       <div className="w-full md:w-[350px] lg:w-[400px] flex flex-col bg-card border border-border/50 rounded-xl shadow-sm shrink-0">
         <div className="p-4 border-b border-border/50 bg-muted/10 space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="font-semibold text-lg">Debt Registry</h2>
+            <h2 className="font-semibold text-lg">Customer Registry</h2>
             <Button size="sm" onClick={() => setCreateModalOpen(true)}>
               <UserPlus className="w-4 h-4 mr-2" /> New
             </Button>

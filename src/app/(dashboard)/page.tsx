@@ -135,7 +135,7 @@ export default function Dashboard() {
                       dy={10}
                     />
                     <YAxis
-                      tickFormatter={(val) => `$${val/100}`}
+                      tickFormatter={(val) => `₦${(val/100).toLocaleString()}`}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}

@@ -9,6 +9,8 @@
  */
 
 import type * as aiReports from "../aiReports.js";
+import type * as aiReportsGenerate from "../aiReportsGenerate.js";
+import type * as aiReportsHelpers from "../aiReportsHelpers.js";
 import type * as categories from "../categories.js";
 import type * as customers from "../customers.js";
 import type * as dashboard from "../dashboard.js";
@@ -27,6 +29,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   aiReports: typeof aiReports;
+  aiReportsGenerate: typeof aiReportsGenerate;
+  aiReportsHelpers: typeof aiReportsHelpers;
   categories: typeof categories;
   customers: typeof customers;
   dashboard: typeof dashboard;

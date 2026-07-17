@@ -1,6 +1,7 @@
 'use client';
 
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
+import { useState, useCallback } from "react";
 import { api } from "../../convex/_generated/api";
 import type {
   Settings, Product, ProductInput, ProductUpdate,
@@ -269,16 +270,19 @@ export function useListAiReports() {
 }
 
 export function useGenerateAiReport() {
-  const convexMutate = useMutation(api.aiReports.generate);
-  return {
-    mutate: (
-      _args?: undefined,
-      options?: { onSuccess?: () => void; onError?: (e: Error) => void },
-    ) => {
-      convexMutate({}).then(options?.onSuccess).catch(options?.onError);
-    },
-    isPending: false,
-  };
+  const convexAction = useAction(api.aiReportsGenerate.generate);
+  const [isPending, setIsPending] = useState(false);
+  const mutate = useCallback((
+    _args?: undefined,
+    options?: { onSuccess?: () => void; onError?: (e: Error) => void },
+  ) => {
+    setIsPending(true);
+    convexAction({})
+      .then(options?.onSuccess)
+      .catch(options?.onError)
+      .finally(() => setIsPending(false));
+  }, [convexAction]);
+  return { mutate, isPending };
 }
 
 // Backup
