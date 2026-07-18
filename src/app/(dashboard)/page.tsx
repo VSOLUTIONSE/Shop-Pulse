@@ -36,6 +36,34 @@ export default function Dashboard() {
     );
   }
 
+  const hasData = (summary?.todayRevenueCents ?? 0) > 0 ||
+    (summary?.totalDebtCents ?? 0) > 0 ||
+    (summary?.recentSales?.length ?? 0) > 0 ||
+    (summary?.lowStockProducts?.length ?? 0) > 0;
+
+  if (!hasData) {
+    return (
+      <div className="space-y-8 pb-10">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
+          <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening in your shop today.</p>
+        </div>
+        <div className="flex flex-col items-center justify-center py-24 text-center max-w-md mx-auto">
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+            <ShoppingBag className="w-10 h-10 text-muted-foreground/40" />
+          </div>
+          <h2 className="text-xl font-semibold mb-2">Your shop is empty</h2>
+          <p className="text-muted-foreground mb-6">
+            Start by adding products, recording sales, and setting up your inventory. Data will appear here once your shop has activity.
+          </p>
+          <Button asChild>
+            <Link href="/inventory">Add Products</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
