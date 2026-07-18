@@ -3,10 +3,8 @@
 import {
   useListAiReports,
   useGenerateAiReport,
-  getAiReportsQueryKey,
   useGetSettings,
 } from '@/lib/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +19,6 @@ export default function Reports() {
 
   const { data: reports, isLoading } = useListAiReports();
   const generateReport = useGenerateAiReport();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   if (!isOwner) {
@@ -40,14 +37,8 @@ export default function Reports() {
   }
 
   const handleGenerate = () => {
-    generateReport.mutate(undefined, {
-      onSuccess: () => {
-        toast({ title: "Report generated successfully" });
-        queryClient.invalidateQueries({ queryKey: getAiReportsQueryKey() });
-      },
-      onError: (err) => {
-        toast({ title: "Failed to generate report", description: String(err), variant: "destructive" });
-      },
+    generateReport.mutate(() => {
+      toast({ title: "Report generated successfully" });
     });
   };
 

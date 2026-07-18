@@ -5,9 +5,7 @@ import {
   useListExpenses,
   useCreateExpense,
   useDeleteExpense,
-  getListExpensesQueryKey,
 } from '@/lib/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { formatMoney, formatDate, formatShortDate } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -66,7 +64,6 @@ export default function Expenses() {
 
   const createExpense = useCreateExpense();
   const deleteExpense = useDeleteExpense();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const filteredExpenses = categoryFilter
@@ -75,29 +72,21 @@ export default function Expenses() {
 
   const handleCreate = () => {
     createExpense.mutate({
-      data: {
-        category: formData.category as any,
-        description: formData.description,
-        amountCents: Math.round(Number(formData.amount) * 100),
-        expenseDate: new Date(formData.date).toISOString(),
-      },
-    }, {
-      onSuccess: () => {
-        toast({ title: "Expense logged successfully" });
-        setCreateModalOpen(false);
-        setFormData({ ...formData, description: '', amount: '' });
-        queryClient.invalidateQueries({ queryKey: getListExpensesQueryKey() });
-      },
+      category: formData.category as any,
+      description: formData.description,
+      amountCents: Math.round(Number(formData.amount) * 100),
+      expenseDate: new Date(formData.date).toISOString(),
+    }).then(() => {
+      toast({ title: "Expense logged successfully" });
+      setCreateModalOpen(false);
+      setFormData({ ...formData, description: '', amount: '' });
     });
   };
 
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this expense record?")) {
-      deleteExpense.mutate(id, {
-        onSuccess: () => {
-          toast({ title: "Expense deleted" });
-          queryClient.invalidateQueries({ queryKey: getListExpensesQueryKey() });
-        },
+      deleteExpense.mutate(id).then(() => {
+        toast({ title: "Expense deleted" });
       });
     }
   };

@@ -5,10 +5,8 @@ import {
   useListProducts,
   useListCustomers,
   useCreateSale,
-  getListProductsQueryKey,
   useGetSettings,
 } from '@/lib/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { formatMoney } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -77,7 +75,6 @@ export default function POS() {
   const { data: settings } = useGetSettings();
 
   const createSale = useCreateSale();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const filteredProducts = useMemo(() => {
@@ -159,17 +156,13 @@ export default function POS() {
       customerId: paymentMethod === 'credit' ? selectedCustomerId || undefined : undefined,
     };
 
-    createSale.mutate({ data: payload }, {
-      onSuccess: () => {
-        toast({ title: 'Sale completed successfully!' });
-        setCart([]);
-        setDiscountCents(0);
-        setCheckoutOpen(false);
-        queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-      },
-      onError: (err) => {
-        toast({ title: 'Failed to complete sale', description: String(err), variant: 'destructive' });
-      },
+    createSale.mutate(payload).then(() => {
+      toast({ title: 'Sale completed successfully!' });
+      setCart([]);
+      setDiscountCents(0);
+      setCheckoutOpen(false);
+    }).catch((err) => {
+      toast({ title: 'Failed to complete sale', description: String(err), variant: 'destructive' });
     });
   };
 

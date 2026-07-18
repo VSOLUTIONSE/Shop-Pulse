@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
+import {
   useListProducts, 
   useCreateProduct,
   useUpdateProduct,
@@ -9,11 +9,8 @@ import {
   useCorrectProductStock,
   useListCategories,
   useCreateCategory,
-  getListProductsQueryKey,
-  getListCategoriesQueryKey,
   useGetSettings
 } from '@/lib/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { formatMoney } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -53,7 +50,6 @@ export default function Inventory() {
   const { data: settings } = useGetSettings();
   
   const isOwner = settings?.activeRole === 'owner';
-  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   // Modals state
@@ -84,72 +80,52 @@ export default function Inventory() {
       categoryId: Number(formData.categoryId),
       barcode: formData.barcode || undefined,
       sellingPriceCents: Math.round(Number(formData.sellingPrice) * 100),
-      costPriceCents: Math.round(Number(formData.costPrice) * 100),
-      stockLevel: activeProduct ? undefined : Number(formData.stockLevel), // only on create
+      costPriceCents: !activeProduct ? Math.round(Number(formData.costPrice) * 100) : undefined,
+      stockLevel: activeProduct ? undefined : Number(formData.stockLevel),
       lowStockThreshold: Number(formData.lowStockThreshold) || settings?.lowStockThreshold || 5,
     };
 
+    const onDone = () => {
+      toast({ title: activeProduct ? "Product updated" : "Product created" });
+      setProductModalOpen(false);
+    };
+
     if (activeProduct) {
-      updateProduct.mutate({ id: activeProduct.id, data: payload }, {
-        onSuccess: () => {
-          toast({ title: "Product updated" });
-          setProductModalOpen(false);
-          queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-        }
-      });
+      updateProduct.mutate(activeProduct.id, payload).then(onDone);
     } else {
-      createProduct.mutate({ data: payload as any }, {
-        onSuccess: () => {
-          toast({ title: "Product created" });
-          setProductModalOpen(false);
-          queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-        }
-      });
+      createProduct.mutate(payload as any).then(onDone);
     }
   };
 
   const handleRestock = () => {
     if (!activeProduct) return;
-    restockProduct.mutate({
-      id: activeProduct.id,
-      data: {
-        quantity: Number(restockData.quantity),
-        costPriceCents: Math.round(Number(restockData.costPrice) * 100)
-      }
-    }, {
-      onSuccess: () => {
-        toast({ title: "Stock reloaded successfully" });
-        setRestockModalOpen(false);
-        queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-      }
+    restockProduct.mutate(
+      activeProduct.id,
+      Number(restockData.quantity),
+      Math.round(Number(restockData.costPrice) * 100)
+    ).then(() => {
+      toast({ title: "Stock reloaded successfully" });
+      setRestockModalOpen(false);
     });
   };
 
   const handleCorrection = () => {
     if (!activeProduct) return;
-    correctProduct.mutate({
-      id: activeProduct.id,
-      data: {
-        quantityChange: Number(correctData.quantityChange),
-        reason: correctData.reason
-      }
-    }, {
-      onSuccess: () => {
-        toast({ title: "Inventory corrected" });
-        setCorrectModalOpen(false);
-        queryClient.invalidateQueries({ queryKey: getListProductsQueryKey() });
-      }
+    correctProduct.mutate(
+      activeProduct.id,
+      Number(correctData.quantityChange),
+      correctData.reason
+    ).then(() => {
+      toast({ title: "Inventory corrected" });
+      setCorrectModalOpen(false);
     });
   };
 
   const handleCategorySubmit = () => {
-    createCategory.mutate({ data: { name: categoryName } }, {
-      onSuccess: () => {
-        toast({ title: "Category added" });
-        setCategoryModalOpen(false);
-        setCategoryName('');
-        queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
-      }
+    createCategory.mutate({ name: categoryName }).then(() => {
+      toast({ title: "Category added" });
+      setCategoryModalOpen(false);
+      setCategoryName('');
     });
   };
 

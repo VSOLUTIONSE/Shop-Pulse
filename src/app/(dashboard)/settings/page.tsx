@@ -6,7 +6,6 @@ import {
   useUpdateSettings,
   useImportBackup,
 } from '@/lib/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +22,6 @@ export default function SettingsPage() {
   const importBackup = useImportBackup();
   const [isExporting, setIsExporting] = useState(false);
 
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,11 +51,8 @@ export default function SettingsPage() {
         attendantLabel: formData.attendantLabel,
         lowStockThreshold: Number(formData.lowStockThreshold),
       },
-    }, {
-      onSuccess: () => {
-        toast({ title: "Settings saved successfully" });
-        queryClient.invalidateQueries({ queryKey: ['settings'] });
-      },
+    }).then(() => {
+      toast({ title: "Settings saved successfully" });
     });
   };
 
@@ -65,11 +60,8 @@ export default function SettingsPage() {
     const newRole = checked ? 'owner' : 'attendant';
     updateSettings.mutate({
       data: { activeRole: newRole },
-    }, {
-      onSuccess: () => {
-        toast({ title: `Role switched to ${newRole}` });
-        queryClient.invalidateQueries();
-      },
+    }).then(() => {
+      toast({ title: `Role switched to ${newRole}` });
     });
   };
 
@@ -108,14 +100,9 @@ export default function SettingsPage() {
     reader.onload = (event) => {
       try {
         const json = JSON.parse(event.target?.result as string);
-        importBackup.mutate({ data: json }, {
-          onSuccess: () => {
-            toast({ title: "Backup restored successfully!" });
-            queryClient.invalidateQueries();
-          },
-          onError: (err) => {
-            toast({ title: "Restore failed", description: String(err), variant: "destructive" });
-          },
+        importBackup.mutate(json, {
+          onSuccess: () => toast({ title: "Backup restored successfully!" }),
+          onError: (err) => toast({ title: "Restore failed", description: String(err), variant: "destructive" }),
         });
       } catch {
         toast({ title: "Invalid backup file", variant: "destructive" });

@@ -6,9 +6,7 @@ import {
   useCreateCustomer,
   useGetCustomer,
   useRecordCustomerPayment,
-  getListCustomersQueryKey,
 } from '@/lib/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { formatMoney, formatDate } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -47,33 +45,27 @@ export default function Customers() {
 
   const createCustomer = useCreateCustomer();
   const recordPayment = useRecordCustomerPayment();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const handleCreate = () => {
-    createCustomer.mutate({ data: { name: formData.name, phone: formData.phone || undefined } }, {
-      onSuccess: (newCust) => {
-        toast({ title: "Customer registered" });
-        setCreateModalOpen(false);
-        setFormData({ name: '', phone: '' });
-        queryClient.invalidateQueries({ queryKey: getListCustomersQueryKey() });
-        setActiveCustomerId(newCust.id);
-      },
+    createCustomer.mutate({ name: formData.name, phone: formData.phone || undefined }).then((newCust) => {
+      toast({ title: "Customer registered" });
+      setCreateModalOpen(false);
+      setFormData({ name: '', phone: '' });
+      setActiveCustomerId((newCust as any).id);
     });
   };
 
   const handlePayment = () => {
     if (!activeCustomerId) return;
-    recordPayment.mutate({
-      id: activeCustomerId,
-      data: { amountCents: Math.round(Number(paymentData.amount) * 100), note: paymentData.note || undefined },
-    }, {
-      onSuccess: () => {
-        toast({ title: "Payment recorded successfully" });
-        setPaymentModalOpen(false);
-        setPaymentData({ amount: '', note: '' });
-        queryClient.invalidateQueries({ queryKey: getListCustomersQueryKey() });
-      },
+    recordPayment.mutate(
+      activeCustomerId,
+      Math.round(Number(paymentData.amount) * 100),
+      paymentData.note || undefined
+    ).then(() => {
+      toast({ title: "Payment recorded successfully" });
+      setPaymentModalOpen(false);
+      setPaymentData({ amount: '', note: '' });
     });
   };
 

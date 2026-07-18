@@ -72,14 +72,9 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
     if (!text || sendMessage.isPending) return;
 
     setInput('');
-    sendMessage.mutate(
-      { message: text },
-      {
-        onError: (err) => {
-          toast({ title: "Failed to send message", description: String(err), variant: "destructive" });
-        },
-      },
-    );
+    sendMessage.mutate(text).catch((err) => {
+      toast({ title: "Failed to send message", description: String(err), variant: "destructive" });
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

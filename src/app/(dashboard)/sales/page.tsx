@@ -4,10 +4,8 @@ import { useState } from 'react';
 import {
   useListSales,
   useVoidSale,
-  getListSalesQueryKey,
   useGetSettings,
 } from '@/lib/hooks';
-import { useQueryClient } from '@tanstack/react-query';
 import { formatMoney, formatDate } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -56,26 +54,20 @@ export default function Sales() {
   });
 
   const voidSaleMutation = useVoidSale();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const handleVoid = () => {
     if (!voidSaleId || !voidReason) return;
 
-    voidSaleMutation.mutate(
-      { id: voidSaleId, data: { reason: voidReason } },
-      {
-        onSuccess: () => {
-          toast({ title: "Sale voided successfully", description: "Inventory and ledgers updated." });
-          setVoidSaleId(null);
-          setVoidReason('');
-          queryClient.invalidateQueries({ queryKey: getListSalesQueryKey() });
-        },
-        onError: (err) => {
-          toast({ title: "Failed to void sale", description: String(err), variant: "destructive" });
-        },
-      }
-    );
+    voidSaleMutation.mutate(voidSaleId, voidReason)
+      .then(() => {
+        toast({ title: "Sale voided successfully", description: "Inventory and ledgers updated." });
+        setVoidSaleId(null);
+        setVoidReason('');
+      })
+      .catch((err) => {
+        toast({ title: "Failed to void sale", description: String(err), variant: "destructive" });
+      });
   };
 
   return (

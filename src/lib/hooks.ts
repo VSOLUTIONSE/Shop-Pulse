@@ -4,41 +4,20 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { useState, useCallback } from "react";
 import { api } from "../../convex/_generated/api";
 import type {
-  Settings, Product, ProductInput, ProductUpdate,
-  Category, CategoryInput, Customer, CustomerInput,
-  CustomerLedgerEntry, Sale, SaleInput, SaleStatus,
-  Expense, ExpenseInput, AiReport, DashboardSummary,
-  StockMovement, PaymentMethod, BackupBundle, ImportResult,
-  AiChatMessage,
+  ProductInput, ProductUpdate, CategoryInput, CustomerInput,
+  CustomerLedgerEntry, SaleInput, SaleStatus, PaymentMethod,
+  BackupBundle, ExpenseInput,
 } from '@/types';
 
-export function getAiReportsQueryKey() { return ["aiReports"] }
 export function getListProductsQueryKey() { return ["products"] }
-export function getListCategoriesQueryKey() { return ["categories"] }
-export function getListCustomersQueryKey() { return ["customers"] }
-export function getListExpensesQueryKey() { return ["expenses"] }
-export function getListSalesQueryKey() { return ["sales"] }
 
-function useConvexQuery<T>(query: () => T | undefined): { data: T | undefined; isLoading: boolean } {
-  const data = query();
+function useCq<T>(fn: () => T | undefined): { data: T | undefined; isLoading: boolean } {
+  const data = fn();
   return { data, isLoading: data === undefined };
 }
 
-function wrapMutation<TArgs, TResult>(
-  fn: (args: TArgs) => Promise<TResult>,
-) {
-  return {
-    mutate: (args: TArgs, options?: { onSuccess?: (result: TResult) => void; onError?: (e: Error) => void }) => {
-      fn(args).then(options?.onSuccess).catch(options?.onError);
-    },
-    mutateAsync: fn,
-    isPending: false,
-  };
-}
-
-// Settings
 export function useGetSettings() {
-  return useConvexQuery(() => useQuery(api.settings.get));
+  return useCq(() => useQuery(api.settings.get));
 }
 
 export function useUpdateSettings() {
@@ -54,275 +33,157 @@ export function useUpdateSettings() {
   };
 }
 
-// Categories
 export function useListCategories() {
-  return useConvexQuery(() => useQuery(api.categories.list));
+  return useCq(() => useQuery(api.categories.list));
 }
 
 export function useCreateCategory() {
-  const convexMutate = useMutation(api.categories.create);
-  return {
-    mutate: (
-      params: { data: { name: string } },
-      options?: { onSuccess?: () => void },
-    ) => {
-      convexMutate({ name: params.data.name }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.categories.create);
+  return { mutate: (d: { name: string }) => mutate({ name: d.name }), isPending: false };
 }
 
 export function useDeleteCategory() {
-  const convexMutate = useMutation(api.categories.remove);
-  return {
-    mutate: (id: number, options?: { onSuccess?: () => void }) => {
-      convexMutate({ id }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.categories.remove);
+  return { mutate: (id: number) => mutate({ id }), isPending: false };
 }
 
-// Products
 export function useListProducts(params?: { search?: string }) {
-  return useConvexQuery(() => useQuery(api.products.list, params?.search ? { search: params.search } : {}));
+  return useCq(() => useQuery(api.products.list, params?.search ? { search: params.search } : {}));
 }
 
 export function useGetProduct(id: number) {
-  return useConvexQuery(() => useQuery(api.products.getById, id ? { id } : "skip"));
+  return useCq(() => useQuery(api.products.getById, id ? { id } : "skip"));
 }
 
 export function useCreateProduct() {
-  const convexMutate = useMutation(api.products.create);
+  const mutate = useMutation(api.products.create);
   return {
-    mutate: (
-      params: { data: ProductInput },
-      options?: { onSuccess?: () => void },
-    ) => {
-      const d = params.data;
-      convexMutate({
-        name: d.name, categoryId: d.categoryId,
-        barcode: d.barcode, sellingPriceCents: d.sellingPriceCents,
-        costPriceCents: d.costPriceCents, stockLevel: d.stockLevel,
-        lowStockThreshold: d.lowStockThreshold ?? 5,
-      }).then(options?.onSuccess);
-    },
+    mutate: (d: ProductInput) => mutate({
+      name: d.name, categoryId: d.categoryId, barcode: d.barcode,
+      sellingPriceCents: d.sellingPriceCents, costPriceCents: d.costPriceCents,
+      stockLevel: d.stockLevel, lowStockThreshold: d.lowStockThreshold ?? 5,
+    }),
     isPending: false,
   };
 }
 
 export function useUpdateProduct() {
-  const convexMutate = useMutation(api.products.update);
-  return {
-    mutate: (
-      params: { id: number; data: ProductUpdate },
-      options?: { onSuccess?: () => void },
-    ) => {
-      convexMutate({ id: params.id, ...params.data }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.products.update);
+  return { mutate: (id: number, d: ProductUpdate) => mutate({ id, ...d }), isPending: false };
 }
 
 export function useRestockProduct() {
-  const convexMutate = useMutation(api.products.restock);
-  return {
-    mutate: (
-      params: { id: number; data: { quantity: number; costPriceCents: number } },
-      options?: { onSuccess?: () => void },
-    ) => {
-      convexMutate({ id: params.id, quantity: params.data.quantity, costPriceCents: params.data.costPriceCents }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.products.restock);
+  return { mutate: (id: number, q: number, c: number) => mutate({ id, quantity: q, costPriceCents: c }), isPending: false };
 }
 
 export function useCorrectProductStock() {
-  const convexMutate = useMutation(api.products.correctStock);
-  return {
-    mutate: (
-      params: { id: number; data: { quantityChange: number; reason: string } },
-      options?: { onSuccess?: () => void },
-    ) => {
-      convexMutate({ id: params.id, quantityChange: params.data.quantityChange, reason: params.data.reason }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.products.correctStock);
+  return { mutate: (id: number, q: number, r: string) => mutate({ id, quantityChange: q, reason: r }), isPending: false };
 }
 
 export function useListProductMovements(id: number) {
-  return useConvexQuery(() => useQuery(api.products.listMovements, id ? { productId: id } : "skip"));
+  return useCq(() => useQuery(api.products.listMovements, id ? { productId: id } : "skip"));
 }
 
-// Customers
 export function useListCustomers(params?: { search?: string }) {
-  return useConvexQuery(() => useQuery(api.customers.list, params?.search ? { search: params.search } : {}));
+  return useCq(() => useQuery(api.customers.list, params?.search ? { search: params.search } : {}));
 }
 
 export function useGetCustomer(id: number) {
-  const result = useQuery(api.customers.getById, id ? { id } : "skip");
-  return { data: result as (Customer & { ledger: CustomerLedgerEntry[] }) | undefined, isLoading: result === undefined };
+  return useCq(() => useQuery(api.customers.getById, id ? { id } : "skip"));
 }
 
 export function useCreateCustomer() {
-  const convexMutate = useMutation(api.customers.create);
-  return {
-    mutate: (
-      params: { data: CustomerInput },
-      options?: { onSuccess?: (result: any) => void },
-    ) => {
-      convexMutate({ name: params.data.name, phone: params.data.phone }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.customers.create);
+  return { mutate: (d: { name: string; phone?: string }) => mutate({ name: d.name, phone: d.phone }), isPending: false };
 }
 
 export function useRecordCustomerPayment() {
-  const convexMutate = useMutation(api.customers.recordPayment);
-  return {
-    mutate: (
-      params: { id: number; data: { amountCents: number; note?: string } },
-      options?: { onSuccess?: () => void },
-    ) => {
-      convexMutate({ customerId: params.id, amountCents: params.data.amountCents, note: params.data.note }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.customers.recordPayment);
+  return { mutate: (id: number, a: number, n?: string) => mutate({ customerId: id, amountCents: a, note: n }), isPending: false };
 }
 
-// Sales
 export function useListSales(params?: { search?: string; status?: SaleStatus; paymentMethod?: PaymentMethod }) {
-  return useConvexQuery(() => useQuery(api.sales.list, {
+  return useCq(() => useQuery(api.sales.list, {
     search: params?.search, status: params?.status, paymentMethod: params?.paymentMethod,
   }));
 }
 
 export function useGetSale(id: number) {
-  return useConvexQuery(() => useQuery(api.sales.getById, id ? { id } : "skip"));
+  return useCq(() => useQuery(api.sales.getById, id ? { id } : "skip"));
 }
 
+const toSalePayload = (d: SaleInput) => ({
+  items: d.items.map(i => ({ productId: i.productId, quantity: i.quantity })),
+  payments: d.payments.map(p => ({ method: p.method, amountCents: p.amountCents })),
+  discountCents: d.discountCents, customerId: d.customerId,
+});
+
 export function useCreateSale() {
-  const convexMutate = useMutation(api.sales.create);
-  return {
-    mutate: (
-      params: { data: SaleInput },
-      options?: { onSuccess?: () => void; onError?: (e: Error) => void },
-    ) => {
-      const d = params.data;
-      convexMutate({
-        items: d.items.map(i => ({ productId: i.productId, quantity: i.quantity })),
-        payments: d.payments.map(p => ({ method: p.method, amountCents: p.amountCents })),
-        discountCents: d.discountCents,
-        customerId: d.customerId,
-      }).then(options?.onSuccess).catch(options?.onError);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.sales.create);
+  return { mutate: (d: SaleInput) => mutate(toSalePayload(d)), isPending: false };
 }
 
 export function useVoidSale() {
-  const convexMutate = useMutation(api.sales.voidSale);
-  return {
-    mutate: (
-      params: { id: number; data: { reason: string } },
-      options?: { onSuccess?: () => void; onError?: (e: Error) => void },
-    ) => {
-      convexMutate({ id: params.id, reason: params.data.reason }).then(options?.onSuccess).catch(options?.onError);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.sales.voidSale);
+  return { mutate: (id: number, reason: string) => mutate({ id, reason }), isPending: false };
 }
 
-// Expenses
 export function useListExpenses() {
-  return useConvexQuery(() => useQuery(api.expenses.list));
+  return useCq(() => useQuery(api.expenses.list));
 }
 
 export function useCreateExpense() {
-  const convexMutate = useMutation(api.expenses.create);
-  return {
-    mutate: (
-      params: { data: ExpenseInput },
-      options?: { onSuccess?: () => void },
-    ) => {
-      convexMutate(params.data).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.expenses.create);
+  return { mutate: (d: ExpenseInput) => mutate(d), isPending: false };
 }
 
 export function useDeleteExpense() {
-  const convexMutate = useMutation(api.expenses.remove);
-  return {
-    mutate: (id: number, options?: { onSuccess?: () => void }) => {
-      convexMutate({ id }).then(options?.onSuccess);
-    },
-    isPending: false,
-  };
+  const mutate = useMutation(api.expenses.remove);
+  return { mutate: (id: number) => mutate({ id }), isPending: false };
 }
 
-// Dashboard
 export function useGetDashboardSummary() {
-  return useConvexQuery(() => useQuery(api.dashboard.getSummary));
+  return useCq(() => useQuery(api.dashboard.getSummary));
 }
 
-// AI Reports
 export function useListAiReports() {
-  return useConvexQuery(() => useQuery(api.aiReports.list));
+  return useCq(() => useQuery(api.aiReports.list));
 }
 
 export function useGenerateAiReport() {
-  const convexAction = useAction(api.aiReportsGenerate.generate);
-  const [isPending, setIsPending] = useState(false);
-  const mutate = useCallback((
-    _args?: undefined,
-    options?: { onSuccess?: () => void; onError?: (e: Error) => void },
-  ) => {
-    setIsPending(true);
-    convexAction({})
-      .then(options?.onSuccess)
-      .catch(options?.onError)
-      .finally(() => setIsPending(false));
-  }, [convexAction]);
-  return { mutate, isPending };
+  const act = useAction(api.aiReportsGenerate.generate);
+  const [p, sp] = useState(false);
+  const mutate = useCallback((cb?: () => void) => {
+    sp(true);
+    return act({}).then(() => cb?.()).finally(() => sp(false));
+  }, [act]);
+  return { mutate, isPending: p };
 }
 
-// AI Chat
 export function useListAiChatMessages() {
-  return useConvexQuery(() => useQuery(api.aiChat.list));
+  return useCq(() => useQuery(api.aiChat.list));
 }
 
 export function useSendAiChatMessage() {
-  const convexAction = useAction(api.aiChat.chat);
-  const [isPending, setIsPending] = useState(false);
-  const mutate = useCallback((
-    params: { message: string },
-    options?: { onSuccess?: (result: { reply: string; model: string; tokens: number }) => void; onError?: (e: Error) => void },
-  ) => {
-    setIsPending(true);
-    convexAction({ message: params.message })
-      .then((result) => {
-        options?.onSuccess?.(result as { reply: string; model: string; tokens: number });
-      })
-      .catch(options?.onError)
-      .finally(() => setIsPending(false));
-  }, [convexAction]);
-  return { mutate, isPending };
+  const act = useAction(api.aiChat.chat);
+  const [p, sp] = useState(false);
+  const mutate = useCallback((msg: string, cb?: (r: { reply: string; model: string; tokens: number }) => void) => {
+    sp(true);
+    return act({ message: msg }).then((r) => cb?.(r as any)).finally(() => sp(false));
+  }, [act]);
+  return { mutate, isPending: p };
 }
 
-export function getAiChatMessagesQueryKey() { return ["aiChatMessages"] }
-
-// Backup
 export async function exportBackup(): Promise<BackupBundle> {
   throw new Error('Backup not yet implemented with Convex');
 }
 
 export function useImportBackup() {
   return {
-    mutate: (
-      _params: { data: BackupBundle },
-      options?: { onSuccess?: () => void; onError?: (e: Error) => void },
-    ) => {
-      options?.onError?.(new Error('Import not yet implemented with Convex'));
+    mutate: (_data: BackupBundle, opts?: { onSuccess?: () => void; onError?: (e: Error) => void }) => {
+      opts?.onError?.(new Error('Import not yet implemented with Convex'));
     },
     isPending: false,
   };
