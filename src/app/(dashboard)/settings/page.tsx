@@ -45,12 +45,10 @@ export default function SettingsPage() {
 
   const handleSaveSettings = () => {
     updateSettings.mutate({
-      data: {
-        shopName: formData.shopName,
-        ownerLabel: formData.ownerLabel,
-        attendantLabel: formData.attendantLabel,
-        lowStockThreshold: Number(formData.lowStockThreshold),
-      },
+      shopName: formData.shopName,
+      ownerLabel: formData.ownerLabel,
+      attendantLabel: formData.attendantLabel,
+      lowStockThreshold: Number(formData.lowStockThreshold),
     }).then(() => {
       toast({ title: "Settings saved successfully" });
     });
@@ -58,9 +56,7 @@ export default function SettingsPage() {
 
   const handleRoleToggle = (checked: boolean) => {
     const newRole = checked ? 'owner' : 'attendant';
-    updateSettings.mutate({
-      data: { activeRole: newRole },
-    }).then(() => {
+    updateSettings.mutate({ activeRole: newRole }).then(() => {
       toast({ title: `Role switched to ${newRole}` });
     });
   };

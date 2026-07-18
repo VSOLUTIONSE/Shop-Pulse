@@ -21,14 +21,9 @@ export function useGetSettings() {
 }
 
 export function useUpdateSettings() {
-  const convexMutate = useMutation(api.settings.update);
+  const mutate = useMutation(api.settings.update);
   return {
-    mutate: (
-      params: { data: { shopName?: string; ownerLabel?: string; attendantLabel?: string; activeRole?: 'owner' | 'attendant'; lowStockThreshold?: number } },
-      options?: { onSuccess?: () => void },
-    ) => {
-      convexMutate(params.data).then(options?.onSuccess);
-    },
+    mutate: (d: { shopName?: string; ownerLabel?: string; attendantLabel?: string; activeRole?: 'owner' | 'attendant'; lowStockThreshold?: number }) => mutate(d),
     isPending: false,
   };
 }
