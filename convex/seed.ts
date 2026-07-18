@@ -55,12 +55,14 @@ export const seed = mutation({
 
     await ctx.db.insert("counters", { name: "expenses", value: 4 });
     await ctx.db.insert("expenses", { id: 1, category: "power", amountCents: 50000, description: "Monthly electricity bill", expenseDate: "2026-07-15" });
-    await ctx.db.insert("expenses", { id: 2, category: "rent", amountCents: 200000, description: "Shop rent", expenseDate: "2026-07-01" });
+    await ctx.db.insert("expenses", { id: 2, category: "rent", amountCents: 200000, description: "Rent", expenseDate: "2026-07-01" });
     await ctx.db.insert("expenses", { id: 3, category: "other", amountCents: 25000, description: "Cleaning supplies", expenseDate: "2026-07-14" });
 
     await ctx.db.insert("counters", { name: "stockMovements", value: 11 });
 
     await ctx.db.insert("counters", { name: "aiReports", value: 1 });
+
+    await ctx.db.insert("counters", { name: "aiChatMessages", value: 1 });
 
     return { done: true, message: "Seed complete" };
   },

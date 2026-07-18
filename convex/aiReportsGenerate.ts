@@ -3,7 +3,11 @@ import { internal } from "./_generated/api";
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 
-// Explicit type to break circular inference: action() → internal → typeof this module → action()
+type Debtor = { name: string; phone: string; balanceCents: number };
+type LowStockItem = { name: string; stockLevel: number; lowStockThreshold: number };
+type RecentExpense = { category: string; amountCents: number; description: string };
+type RecentSale = { id: number; totalCents: number; itemCount: number; customerName: string | null };
+
 type BusinessData = {
   shopName: string;
   totalSales: number;
@@ -20,6 +24,10 @@ type BusinessData = {
   transferSales: number;
   cardSales: number;
   creditSales: number;
+  debtors: Debtor[];
+  lowStockList: LowStockItem[];
+  recentExpenses: RecentExpense[];
+  recentSalesData: RecentSale[];
 };
 
 type ReportResult = {
@@ -40,48 +48,72 @@ export const generate = action({
       internal.aiReportsHelpers.getBusinessData
     )) as BusinessData;
 
-    const systemPrompt = `You are an expert business analyst for a retail shop called "${data.shopName}" in Nigeria.
-Generate a comprehensive, insightful business analysis report in markdown format.
-Use clear section headings (##), bullet points, and bold for key metrics.
-Be specific with numbers and provide actionable insights.
-Include these sections:
-1. Executive Summary - top-level overview of business health
-2. Sales Performance - revenue, transaction count, average order value, payment method breakdown
-3. Inventory Analysis - stock health, low stock alerts, cost of inventory on hand
-4. Accounts Receivable - outstanding credit, credit customer count
-5. Expense Overview - total expenses vs revenue
-6. Strategic Recommendations - 3-5 actionable recommendations based on the data
+    const systemPrompt = `You are SalesPulse AI, a friendly business intelligence assistant for "${data.shopName}". Your job is to give the business owner (call them "Boss") a quick, smart, conversational update in plain Nigerian English.
 
-CRITICAL: This is a Nigerian business. ALL monetary values MUST use Nigerian Naira (₦). NEVER use dollar signs ($) or any other currency. Format as ₦X,XXX.XX. The data is in cents, so divide by 100. This is the most important rule - every single amount must be shown in Naira.`;
+Write in a warm, respectful tone like you're chatting with your boss. Start with "Good morning/afternoon" depending on time of day. Use simple terms, not corporate jargon. Be encouraging and solution-oriented.
 
-    const userPrompt: string = `Here is the current business data for ${data.shopName}:
+Structure the report exactly like this with these sections:
 
-**Sales Data:**
-- Total completed sales: ${data.totalSales}
-- Total revenue: ₦${(data.totalRevenue / 100).toLocaleString()}
-- Total discounts given: ₦${(data.totalDiscounts / 100).toLocaleString()}
-- Average order value: ₦${data.totalSales > 0 ? ((data.totalRevenue / data.totalSales) / 100).toLocaleString() : 0}
-- Cash payments: ₦${(data.cashSales / 100).toLocaleString()}
-- Transfer payments: ₦${(data.transferSales / 100).toLocaleString()}
-- Card payments: ₦${(data.cardSales / 100).toLocaleString()}
-- Credit payments: ₦${(data.creditSales / 100).toLocaleString()}
+**1. Greeting + Business Summary (1-2 paragraphs)**
+Greet the Boss by name. Give a plain-language summary of how the shop is doing overall. Mention specific products if data shows trends. Explain any losses or deficits in a positive, reassuring way (e.g. "temporary dip due to necessary investments").
 
-**Inventory Data:**
-- Total products: ${data.productCount}
-- Total stock value (at cost): ₦${(data.totalCost / 100).toLocaleString()}
-- Low stock items: ${data.lowStockCount} (out of ${data.productCount} products)
-- Out of stock items: ${data.outOfStockCount}
-- Stock health: ${data.productCount > 0 ? Math.round(((data.productCount - data.lowStockCount) / data.productCount) * 100) : 0}%
+**2. Financial Performance Breakdown**
+Use this exact format with the -- separator:
+--
+Total Sales Revenue: ₦X *(Total value of goods sold)*
+Estimated Cost of Goods Sold (COGS): ₦X *(What we paid to buy the items sold)*
+Gross Profit: ₦X
+Total Recorded Expenses: ₦X *(Breakdown of top expenses)*
+Estimated Net Profit/Loss: ₦X *(Explain if negative)*
+--
 
-**Customer Data:**
-- Total customers: ${data.customerCount}
-- Outstanding credit: ₦${(data.totalCredit / 100).toLocaleString()}
+**3. Debt & Outstanding Payments Tracker**
+List each customer who owes money with their phone number and balance. Use numbered list:
+1. Customer Name (Phone)
+Balance Owed: ₦X
+*Note:* context if available
 
-**Expense Data:**
-- Total expenses: ₦${(data.totalExpenses / 100).toLocaleString()}
-- Revenue-to-expense ratio: ${data.totalExpenses > 0 ? (data.totalRevenue / data.totalExpenses).toFixed(2) : "N/A"}
+Total Outstanding Debt: ₦X
 
-Generate the analysis report now.`;
+**4. Urgent Restock Alerts (Low Stock)**
+List items running low with current stock and threshold:
+- Item Name
+*Current Stock:* X units remaining *(Low Stock Level is X)*
+
+**5. Closing**
+Encouraging sign-off. Offer to help with specific tasks (e.g. drafting WhatsApp payment reminders).
+
+CRITICAL RULES:
+- ALL monetary values in Nigerian Naira (₦). NEVER use $.
+- Divide cents by 100 to get Naira values.
+- Keep it conversational and warm, like a trusted assistant talking to their boss.
+- Be optimistic but honest about challenges.`;
+
+    const userPrompt = `Here is the current business data for ${data.shopName} to generate the report:
+
+**Sales:** ${data.totalSales} completed sales | Total revenue: ₦${(data.totalRevenue / 100).toLocaleString()} | Discounts given: ₦${(data.totalDiscounts / 100).toLocaleString()}
+**Payment methods:** Cash: ₦${(data.cashSales / 100).toLocaleString()} | Transfer: ₦${(data.transferSales / 100).toLocaleString()} | Card: ₦${(data.cardSales / 100).toLocaleString()} | Credit: ₦${(data.creditSales / 100).toLocaleString()}
+
+**Products:** ${data.productCount} total | Low stock: ${data.lowStockCount} | Out of stock: ${data.outOfStockCount}
+**Stock value (cost):** ₦${(data.totalCost / 100).toLocaleString()}
+
+**Customers:** ${data.customerCount} total | Outstanding credit: ₦${(data.totalCredit / 100).toLocaleString()}
+
+**Expenses total:** ₦${(data.totalExpenses / 100).toLocaleString()}
+
+**Debtors (people owing):**
+${data.debtors.map((d) => `${d.name} | ${d.phone} | ₦${(d.balanceCents / 100).toLocaleString()}`).join("\n")}
+
+**Low stock items:**
+${data.lowStockList.map((p) => `${p.name} | Stock: ${p.stockLevel} | Threshold: ${p.lowStockThreshold}`).join("\n")}
+
+**Recent expenses:**
+${data.recentExpenses.map((e) => `${e.category}: ₦${(e.amountCents / 100).toLocaleString()} - ${e.description}`).join("\n")}
+
+**Recent sales:**
+${data.recentSalesData.map((s) => `Sale #${s.id}: ₦${(s.totalCents / 100).toLocaleString()} (${s.itemCount} items)${s.customerName ? ` - ${s.customerName}` : ""}`).join("\n")}
+
+Generate the SalesPulse report now in the required format.`;
 
     let content: string;
     let title: string;
@@ -96,7 +128,7 @@ Generate the analysis report now.`;
         system: systemPrompt,
         prompt: userPrompt,
         temperature: 0.7,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 4096,
       });
 
       content = result.text;
@@ -107,23 +139,28 @@ Generate the analysis report now.`;
     } catch (err) {
       console.error("AI generation failed, using fallback:", err);
       content = [
-        `📊 **${data.shopName} - Business Analysis Report**`,
+        `Good morning, Boss! ${data.shopName} is here to give you a quick, smart update on how things are going.`,
         ``,
-        `**Sales Overview:**`,
-        `- Total completed sales: ${data.totalSales}`,
-        `- Total revenue: ₦${(data.totalRevenue / 100).toLocaleString()}`,
-        `- Average sale value: ₦${data.totalSales > 0 ? ((data.totalRevenue / data.totalSales) / 100).toLocaleString() : 0}`,
+        `**Business Summary**`,
+        `We've had ${data.totalSales} completed sales with total revenue of ₦${(data.totalRevenue / 100).toLocaleString()}. ${data.lowStockCount > 0 ? `${data.lowStockCount} items are running low and need restocking. ` : ""}Outstanding customer credit stands at ₦${(data.totalCredit / 100).toLocaleString()} across ${data.debtors.length} customers. Total expenses amount to ₦${(data.totalExpenses / 100).toLocaleString()}. Overall, the business is active and there are clear opportunities to improve cash flow by collecting debts and restocking fast-moving items.`,
         ``,
-        `**Inventory:**`,
-        `- Total products: ${data.productCount}`,
-        `- Low stock items: ${data.lowStockCount}`,
-        `- Stock health: ${data.productCount > 0 ? Math.round(((data.productCount - data.lowStockCount) / data.productCount) * 100) : 0}%`,
+        `--`,
+        `**Financial Performance Breakdown**`,
+        `Total Sales Revenue: ₦${(data.totalRevenue / 100).toLocaleString()}`,
+        `Estimated Cost of Goods Sold (COGS): ₦${(data.totalCost / 100).toLocaleString()}`,
+        `Gross Profit: ₦${((data.totalRevenue - data.totalCost) / 100).toLocaleString()}`,
+        `Total Recorded Expenses: ₦${(data.totalExpenses / 100).toLocaleString()}`,
+        `Estimated Net Profit/Loss: ₦${((data.totalRevenue - data.totalCost - data.totalExpenses) / 100).toLocaleString()}`,
+        `--`,
         ``,
-        `**Credit:**`,
-        `- Outstanding credit: ₦${(data.totalCredit / 100).toLocaleString()}`,
-        `- Credit customers: ${data.customerCount}`,
+        `**Debt & Outstanding Payments Tracker**`,
+        ...data.debtors.map((d) => `${d.name} (${d.phone})\nBalance Owed: ₦${(d.balanceCents / 100).toLocaleString()}`),
+        `*Total Outstanding Debt: ₦${(data.totalCredit / 100).toLocaleString()}*`,
         ``,
-        `_AI analysis was unavailable. Showing computed metrics instead._`,
+        `**Urgent Restock Alerts**`,
+        ...data.lowStockList.map((p) => `${p.name}\n*Current Stock:* ${p.stockLevel} units remaining *(Low Stock Level is ${p.lowStockThreshold})*`),
+        ``,
+        `Let's make today a productive one, Boss! If you need me to draft payment reminders for your debtors, just let me know.`,
       ].join("\n");
     }
 

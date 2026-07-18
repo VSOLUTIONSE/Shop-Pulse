@@ -38,3 +38,4 @@ export * from './settingsUpdate';
 export * from './stockMovement';
 export * from './stockMovementType';
 export * from './voidInput';
+export * from './aiChatMessage';

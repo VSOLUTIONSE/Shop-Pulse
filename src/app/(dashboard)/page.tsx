@@ -46,15 +46,15 @@ export default function Dashboard() {
       <div className="space-y-8 pb-10">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
-          <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening in your shop today.</p>
+          <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening in sales today.</p>
         </div>
         <div className="flex flex-col items-center justify-center py-24 text-center max-w-md mx-auto">
           <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
             <ShoppingBag className="w-10 h-10 text-muted-foreground/40" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Your shop is empty</h2>
+          <h2 className="text-xl font-semibold mb-2">Your sales record is empty</h2>
           <p className="text-muted-foreground mb-6">
-            Start by adding products, recording sales, and setting up your inventory. Data will appear here once your shop has activity.
+            Start by adding products, recording sales, and setting up your inventory. Data will appear here once you start recording sales.
           </p>
           <Button asChild>
             <Link href="/inventory">Add Products</Link>
@@ -69,7 +69,7 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
-          <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening in your shop today.</p>
+          <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening in sales today.</p>
         </div>
         <div className="flex items-center gap-3">
           <Button asChild>

@@ -9,6 +9,7 @@ import type {
   CustomerLedgerEntry, Sale, SaleInput, SaleStatus,
   Expense, ExpenseInput, AiReport, DashboardSummary,
   StockMovement, PaymentMethod, BackupBundle, ImportResult,
+  AiChatMessage,
 } from '@/types';
 
 export function getAiReportsQueryKey() { return ["aiReports"] }
@@ -284,6 +285,31 @@ export function useGenerateAiReport() {
   }, [convexAction]);
   return { mutate, isPending };
 }
+
+// AI Chat
+export function useListAiChatMessages() {
+  return useConvexQuery(() => useQuery(api.aiChat.list));
+}
+
+export function useSendAiChatMessage() {
+  const convexAction = useAction(api.aiChat.chat);
+  const [isPending, setIsPending] = useState(false);
+  const mutate = useCallback((
+    params: { message: string },
+    options?: { onSuccess?: (result: { reply: string; model: string; tokens: number }) => void; onError?: (e: Error) => void },
+  ) => {
+    setIsPending(true);
+    convexAction({ message: params.message })
+      .then((result) => {
+        options?.onSuccess?.(result as { reply: string; model: string; tokens: number });
+      })
+      .catch(options?.onError)
+      .finally(() => setIsPending(false));
+  }, [convexAction]);
+  return { mutate, isPending };
+}
+
+export function getAiChatMessagesQueryKey() { return ["aiChatMessages"] }
 
 // Backup
 export async function exportBackup(): Promise<BackupBundle> {

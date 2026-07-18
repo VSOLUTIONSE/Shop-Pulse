@@ -32,7 +32,7 @@ export default function Reports() {
         </div>
         <h2 className="text-2xl font-bold mb-2">Access Restricted</h2>
         <p className="text-muted-foreground">
-          AI Business Reports contain sensitive financial analysis and are only available to the Shop Owner.
+          AI Business Reports contain sensitive financial analysis and are only available to the Owner.
           Switch roles in Settings to access this feature.
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function Reports() {
             <Sparkles className="w-8 h-8 text-primary" />
             AI Business Reports
           </h1>
-          <p className="text-muted-foreground mt-1">Intelligent analysis of your shop&apos;s performance, inventory, and trends.</p>
+          <p className="text-muted-foreground mt-1">Intelligent analysis of your sales performance, inventory, and trends.</p>
         </div>
         <Button
           size="lg"

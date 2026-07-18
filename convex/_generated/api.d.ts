@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as aiChat from "../aiChat.js";
 import type * as aiReports from "../aiReports.js";
 import type * as aiReportsGenerate from "../aiReportsGenerate.js";
 import type * as aiReportsHelpers from "../aiReportsHelpers.js";
@@ -28,6 +29,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  aiChat: typeof aiChat;
   aiReports: typeof aiReports;
   aiReportsGenerate: typeof aiReportsGenerate;
   aiReportsHelpers: typeof aiReportsHelpers;

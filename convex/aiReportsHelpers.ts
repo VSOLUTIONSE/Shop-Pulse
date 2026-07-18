@@ -34,7 +34,40 @@ export const getBusinessData = internalQuery({
       .filter((s) => s.payments.some((p) => p.method === "credit"))
       .reduce((sum, s) => sum + s.totalCents, 0);
 
-    const shopName = settings?.shopName ?? "My Shop";
+    const shopName = settings?.shopName ?? "SalesRecord";
+
+    const debtors = customers
+      .filter((c) => c.balanceCents > 0)
+      .map((c) => ({
+        name: c.name,
+        phone: c.phone ?? "",
+        balanceCents: c.balanceCents,
+      }));
+
+    const lowStockList = lowStockItems.map((p) => ({
+      name: p.name,
+      stockLevel: p.stockLevel,
+      lowStockThreshold: p.lowStockThreshold,
+    }));
+
+    const recentExpenses = expenses
+      .sort((a, b) => b._creationTime - a._creationTime)
+      .slice(0, 5)
+      .map((e) => ({
+        category: e.category,
+        amountCents: e.amountCents,
+        description: e.description ?? "",
+      }));
+
+    const recentSalesData = completedSales
+      .sort((a, b) => b._creationTime - a._creationTime)
+      .slice(0, 10)
+      .map((s) => ({
+        id: s.id,
+        totalCents: s.totalCents,
+        itemCount: s.items.length,
+        customerName: s.customerName ?? null,
+      }));
 
     return {
       shopName, totalSales, totalRevenue, totalDiscounts,
@@ -43,6 +76,7 @@ export const getBusinessData = internalQuery({
       productCount: products.length,
       totalCost, totalCredit, customerCount: customers.length,
       totalExpenses, cashSales, transferSales, cardSales, creditSales,
+      debtors, lowStockList, recentExpenses, recentSalesData,
     };
   },
 });

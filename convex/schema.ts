@@ -85,6 +85,14 @@ export default defineSchema({
     completionTokens: v.optional(v.number()),
   }).index("by_id_idx", ["id"]),
 
+  aiChatMessages: defineTable({
+    id: v.number(),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    content: v.string(),
+    model: v.optional(v.string()),
+    tokens: v.optional(v.number()),
+  }).index("by_id_idx", ["id"]),
+
   stockMovements: defineTable({
     id: v.number(),
     productId: v.number(),

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   useListProducts,
   useListCustomers,
@@ -12,8 +12,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { formatMoney } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -28,6 +26,8 @@ import {
   UserCheck,
   CheckCircle2,
   Package as PackageIcon,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -51,8 +51,21 @@ interface CartItem {
 
 type PaymentMethod = 'cash' | 'transfer' | 'card' | 'credit';
 
+const PAGE_SIZE = 50;
+
+function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
+}
+
 export default function POS() {
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 250);
+  const [page, setPage] = useState(0);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [discountCents, setDiscountCents] = useState(0);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -69,14 +82,23 @@ export default function POS() {
 
   const filteredProducts = useMemo(() => {
     if (!products) return [];
-    if (!search) return products;
-    const lowerSearch = search.toLowerCase();
+    if (!debouncedSearch) return products;
+    const lowerSearch = debouncedSearch.toLowerCase();
     return products.filter(p =>
       p.name.toLowerCase().includes(lowerSearch) ||
       p.barcode?.toLowerCase().includes(lowerSearch) ||
       p.categoryName.toLowerCase().includes(lowerSearch)
     );
-  }, [products, search]);
+  }, [products, debouncedSearch]);
+
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const pagedProducts = useMemo(() => {
+    return filteredProducts.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  }, [filteredProducts, page]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearch]);
 
   const subtotal = cart.reduce((acc, item) => acc + (item.unitPriceCents * item.quantity), 0);
   const total = Math.max(0, subtotal - discountCents);
@@ -152,9 +174,9 @@ export default function POS() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col md:flex-row gap-6">
-      <div className="flex-1 flex flex-col min-w-0 bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-border/50 bg-muted/20">
+    <div className="h-[calc(100vh-8rem)] flex flex-col md:flex-row gap-6 overflow-hidden">
+      <div className="max-md:h-[55%] max-md:flex-none flex-1 flex flex-col min-h-0 min-w-0 bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border/50 bg-muted/20 shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -166,58 +188,104 @@ export default function POS() {
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-4">
-          {productsLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="h-32 bg-muted animate-pulse rounded-lg" />
-              ))}
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
-              <PackageIcon className="w-12 h-12 mb-4 opacity-20" />
-              <p>No products found</p>
-            </div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-xs text-muted-foreground border-b border-border/50">
-                  <th className="text-left font-medium py-2 px-3">Item</th>
-                  <th className="text-left font-medium py-2 px-3 hidden sm:table-cell">Category</th>
-                  <th className="text-right font-medium py-2 px-3">Price</th>
-                  <th className="text-right font-medium py-2 px-3">Stock</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map(product => (
-                  <tr
-                    key={product.id}
-                    onClick={() => addToCart(product)}
-                    className={`border-b border-border/25 cursor-pointer transition-colors hover:bg-muted/40 active:bg-muted/60 ${
-                      product.stockLevel <= 0 ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    <td className="py-2.5 px-3 font-medium truncate max-w-[200px]">{product.name}</td>
-                    <td className="py-2.5 px-3 text-muted-foreground hidden sm:table-cell">{product.categoryName}</td>
-                    <td className="py-2.5 px-3 text-right font-mono font-semibold">{formatMoney(product.sellingPriceCents)}</td>
-                    <td className="py-2.5 px-3 text-right">
-                      {product.stockLevel <= 0 ? (
-                        <span className="text-destructive text-xs font-medium">Out of Stock</span>
-                      ) : product.isLowStock ? (
-                        <span className="text-orange-500 text-xs font-mono">{product.stockLevel}</span>
-                      ) : (
-                        <span className="text-muted-foreground text-xs font-mono">{product.stockLevel}</span>
-                      )}
-                    </td>
+        <ScrollArea className="flex-1">
+          <div className="p-4">
+            {productsLoading ? (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-muted-foreground border-b border-border/50">
+                    <th className="text-left font-medium py-2 px-3">Item</th>
+                    <th className="text-left font-medium py-2 px-3 hidden sm:table-cell">Category</th>
+                    <th className="text-right font-medium py-2 px-3">Price</th>
+                    <th className="text-right font-medium py-2 px-3">Stock</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {[1, 2, 3, 4, 5, 6].map(i => (
+                    <tr key={i} className="border-b border-border/25">
+                      <td className="py-2.5 px-3"><div className="h-4 bg-muted animate-pulse rounded w-32" /></td>
+                      <td className="py-2.5 px-3 hidden sm:table-cell"><div className="h-4 bg-muted animate-pulse rounded w-20" /></td>
+                      <td className="py-2.5 px-3 text-right"><div className="h-4 bg-muted animate-pulse rounded w-16 ml-auto" /></td>
+                      <td className="py-2.5 px-3 text-right"><div className="h-4 bg-muted animate-pulse rounded w-10 ml-auto" /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : filteredProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-muted-foreground py-20">
+                <PackageIcon className="w-12 h-12 mb-4 opacity-20" />
+                <p>No products found</p>
+              </div>
+            ) : (
+              <>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-xs text-muted-foreground border-b border-border/50">
+                      <th className="text-left font-medium py-2 px-3">Item</th>
+                      <th className="text-left font-medium py-2 px-3 hidden sm:table-cell">Category</th>
+                      <th className="text-right font-medium py-2 px-3">Price</th>
+                      <th className="text-right font-medium py-2 px-3">Stock</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pagedProducts.map(product => (
+                      <tr
+                        key={product.id}
+                        onClick={() => addToCart(product)}
+                        className={`border-b border-border/25 cursor-pointer transition-colors hover:bg-muted/40 active:bg-muted/60 ${
+                          product.stockLevel <= 0 ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <td className="py-2.5 px-3 font-medium truncate max-w-[200px]">{product.name}</td>
+                        <td className="py-2.5 px-3 text-muted-foreground hidden sm:table-cell">{product.categoryName}</td>
+                        <td className="py-2.5 px-3 text-right font-mono font-semibold">{formatMoney(product.sellingPriceCents)}</td>
+                        <td className="py-2.5 px-3 text-right">
+                          {product.stockLevel <= 0 ? (
+                            <span className="text-destructive text-xs font-medium">Out of Stock</span>
+                          ) : product.isLowStock ? (
+                            <span className="text-orange-500 text-xs font-mono">{product.stockLevel}</span>
+                          ) : (
+                            <span className="text-muted-foreground text-xs font-mono">{product.stockLevel}</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between pt-3 px-1">
+                    <p className="text-xs text-muted-foreground">
+                      {filteredProducts.length} item{filteredProducts.length !== 1 ? 's' : ''}
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setPage(p => Math.max(0, p - 1))}
+                        disabled={page === 0}
+                        className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-muted disabled:opacity-30 transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-xs text-muted-foreground px-2 min-w-[60px] text-center tabular-nums">
+                        {page + 1} / {totalPages}
+                      </span>
+                      <button
+                        onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                        disabled={page >= totalPages - 1}
+                        className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-muted disabled:opacity-30 transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </ScrollArea>
       </div>
 
-      <div className="w-full md:w-[380px] lg:w-[420px] flex flex-col bg-card border border-border/50 rounded-xl shadow-sm shrink-0">
+      <div className="w-full md:w-[380px] lg:w-[420px] flex flex-col bg-card border border-border/50 rounded-xl shadow-sm shrink-0 max-md:flex-1 max-md:min-h-0 overflow-hidden">
         <div className="p-4 border-b border-border/50 bg-primary text-primary-foreground rounded-t-xl">
           <div className="flex items-center gap-2 font-semibold">
             <ShoppingCart className="w-5 h-5" />
@@ -225,89 +293,91 @@ export default function POS() {
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-4">
-          {cart.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-muted-foreground mt-20">
-              <ShoppingCart className="w-12 h-12 mb-4 opacity-20" />
-              <p>Cart is empty</p>
-              <p className="text-sm mt-1 opacity-70">Click products to add them</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {cart.map(item => (
-                <div key={item.productId} className="flex flex-col gap-2 p-3 bg-muted/20 border border-border/50 rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <span className="font-medium text-sm max-w-[200px] truncate" title={item.name}>{item.name}</span>
-                    <button onClick={() => removeFromCart(item.productId)} className="text-muted-foreground hover:text-destructive transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <div className="flex items-center gap-2 bg-background border border-border/50 rounded-md p-0.5">
-                      <button
-                        onClick={() => updateQuantity(item.productId, -1)}
-                        className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="w-8 text-center font-mono text-sm">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.productId, 1)}
-                        className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"
-                      >
-                        <Plus className="w-3 h-3" />
+        <ScrollArea className="flex-1">
+          <div className="min-h-full flex flex-col p-4">
+            {cart.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
+                <ShoppingCart className="w-12 h-12 mb-4 opacity-20" />
+                <p>Cart is empty</p>
+                <p className="text-sm mt-1 opacity-70">Click products to add them</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {cart.map(item => (
+                  <div key={item.productId} className="flex flex-col gap-2 p-3 bg-muted/20 border border-border/50 rounded-lg">
+                    <div className="flex justify-between items-start">
+                      <span className="font-medium text-sm max-w-[200px] truncate" title={item.name}>{item.name}</span>
+                      <button onClick={() => removeFromCart(item.productId)} className="text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                    <span className="font-mono font-bold text-sm">
-                      {formatMoney(item.unitPriceCents * item.quantity)}
-                    </span>
+                    <div className="flex items-center justify-between mt-1">
+                      <div className="flex items-center gap-2 bg-background border border-border/50 rounded-md p-0.5">
+                        <button
+                          onClick={() => updateQuantity(item.productId, -1)}
+                          className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="w-8 text-center font-mono text-sm">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.productId, 1)}
+                          className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <span className="font-mono font-bold text-sm">
+                        {formatMoney(item.unitPriceCents * item.quantity)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className={cart.length === 0 ? '' : 'mt-auto pt-4 border-t border-border/50'}>
+              <div className="space-y-2 text-sm mb-4">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span className="font-mono">{formatMoney(subtotal)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Discount</span>
+                  <div className="w-20 md:w-24">
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={discountCents === 0 ? '' : (discountCents / 100).toFixed(2)}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        if (isNaN(val)) setDiscountCents(0);
+                        else setDiscountCents(Math.round(val * 100));
+                      }}
+                      className="h-7 md:h-8 text-right font-mono text-xs md:text-sm"
+                      placeholder="0.00"
+                    />
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
-
-        <div className="p-4 border-t border-border/50 bg-muted/10 space-y-4 rounded-b-xl">
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span>
-              <span className="font-mono">{formatMoney(subtotal)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Discount</span>
-              <div className="w-24">
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={discountCents === 0 ? '' : (discountCents / 100).toFixed(2)}
-                  onChange={(e) => {
-                    const val = parseFloat(e.target.value);
-                    if (isNaN(val)) setDiscountCents(0);
-                    else setDiscountCents(Math.round(val * 100));
-                  }}
-                  className="h-8 text-right font-mono"
-                  placeholder="0.00"
-                />
+                <Separator className="my-2" />
+                <div className="flex justify-between font-bold text-lg md:text-xl">
+                  <span>Total</span>
+                  <span className="font-mono text-primary">{formatMoney(total)}</span>
+                </div>
               </div>
-            </div>
-            <Separator className="my-2" />
-            <div className="flex justify-between font-bold text-xl">
-              <span>Total</span>
-              <span className="font-mono text-primary">{formatMoney(total)}</span>
+
+              <Button
+                className="w-full h-11 md:h-14 text-base md:text-lg font-bold"
+                size="lg"
+                disabled={cart.length === 0}
+                onClick={() => setCheckoutOpen(true)}
+              >
+                Charge {formatMoney(total)}
+              </Button>
             </div>
           </div>
-
-          <Button
-            className="w-full h-14 text-lg font-bold"
-            size="lg"
-            disabled={cart.length === 0}
-            onClick={() => setCheckoutOpen(true)}
-          >
-            Charge {formatMoney(total)}
-          </Button>
-        </div>
+        </ScrollArea>
       </div>
 
       <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>

@@ -107,7 +107,7 @@ export const mockSales: Sale[] = [
 ];
 
 export const mockExpenses: Expense[] = [
-  { id: 1, category: 'rent', description: 'Monthly shop rent', amountCents: 500000, expenseDate: '2026-07-01', createdAt: new Date('2026-07-01') },
+  { id: 1, category: 'rent', description: 'Monthly rent', amountCents: 500000, expenseDate: '2026-07-01', createdAt: new Date('2026-07-01') },
   { id: 2, category: 'power', description: 'Electricity bill', amountCents: 85000, expenseDate: '2026-07-05', createdAt: new Date('2026-07-05') },
   { id: 3, category: 'staff', description: 'Staff salary - John', amountCents: 300000, expenseDate: '2026-07-10', createdAt: new Date('2026-07-10') },
   { id: 4, category: 'logistics', description: 'Stock transport fee', amountCents: 45000, expenseDate: '2026-07-12', createdAt: new Date('2026-07-12') },
@@ -115,7 +115,7 @@ export const mockExpenses: Expense[] = [
 ];
 
 export const mockAiReports: AiReport[] = [
-  { id: 1, title: 'Weekly Business Report', type: 'insight', model: 'grok-2', tokens: 523, promptTokens: 320, completionTokens: 203, createdAt: new Date('2026-07-10'), content: '**Weekly Business Report**\n\nYour shop had a solid week with total revenue of ₦850,000 across 34 transactions. Beverages and snacks continue to be your top-performing categories, accounting for 62% of total sales.\n\n**Key Insights:**\n- Top seller: Coca-Cola 500ml (47 units sold)\n- Low stock alert: Oreo Cookies and Pepsi need restocking\n- Credit accounts: ₦645,000 outstanding across 4 customers\n- Expenses: ₦945,000 this month (rent is the biggest at 53%)\n\n**Recommendation:** Consider increasing your Pepsi order and following up with John Doe on his ₦450,000 outstanding balance.' },
+  { id: 1, title: 'Weekly Business Report', type: 'insight', model: 'grok-2', tokens: 523, promptTokens: 320, completionTokens: 203, createdAt: new Date('2026-07-10'), content: '**Weekly Business Report**\n\nYour business had a solid week with total revenue of ₦850,000 across 34 transactions. Beverages and snacks continue to be your top-performing categories, accounting for 62% of total sales.\n\n**Key Insights:**\n- Top seller: Coca-Cola 500ml (47 units sold)\n- Low stock alert: Oreo Cookies and Pepsi need restocking\n- Credit accounts: ₦645,000 outstanding across 4 customers\n- Expenses: ₦945,000 this month (rent is the biggest at 53%)\n\n**Recommendation:** Consider increasing your Pepsi order and following up with John Doe on his ₦450,000 outstanding balance.' },
   { id: 2, title: 'Weekly Business Report', type: 'insight', model: 'grok-2', tokens: 445, promptTokens: 310, completionTokens: 135, createdAt: new Date('2026-07-03'), content: '**Weekly Business Report**\n\nRevenue decreased by 12% compared to the previous week. This appears to be seasonal — the first week of the month is typically slower.\n\n**Key Insights:**\n- 28 transactions completed\n- Average transaction value: ₦21,400\n- Most profitable day: Saturday\n- No new credit accounts opened\n\n**Recommendation:** Run a weekend promotion on slow-moving household items to boost mid-month traffic.' },
 ];
 

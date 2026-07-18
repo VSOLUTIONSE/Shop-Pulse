@@ -131,7 +131,7 @@ export default function SettingsPage() {
     <div className="max-w-4xl mx-auto space-y-8 pb-10">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
-        <p className="text-muted-foreground mt-1">Manage shop identity, roles, and data backups.</p>
+        <p className="text-muted-foreground mt-1">Manage business identity, roles, and data backups.</p>
       </div>
 
       <Card className="border-border/50 shadow-sm border-l-4 border-l-primary">
@@ -169,12 +169,12 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card className="border-border/50 shadow-sm">
           <CardHeader>
-            <CardTitle>Shop Details</CardTitle>
+            <CardTitle>Business Details</CardTitle>
             <CardDescription>Basic information for receipts and UI.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Shop Name</Label>
+              <Label>Business Name</Label>
               <Input
                 value={formData.shopName}
                 onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}

@@ -31,7 +31,7 @@ export const update = mutation({
       await ctx.db.patch(existing._id, args);
     } else {
       await ctx.db.insert("settings", {
-        shopName: args.shopName ?? "Shop",
+        shopName: args.shopName ?? "SalesRecord",
         ownerLabel: args.ownerLabel ?? "Owner",
         attendantLabel: args.attendantLabel ?? "Attendant",
         activeRole: args.activeRole ?? "owner",
