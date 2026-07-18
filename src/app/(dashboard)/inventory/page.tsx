@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   useListProducts, 
   useCreateProduct,
@@ -11,7 +11,7 @@ import {
   useCreateCategory,
   useGetSettings
 } from '@/lib/hooks';
-import { formatMoney } from '@/lib/utils';
+import { formatMoney, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,8 +44,9 @@ import { Label } from '@/components/ui/label';
 
 export default function Inventory() {
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 250);
   
-  const { data: products, isLoading: productsLoading } = useListProducts({ search: search || undefined });
+  const { data: products, isLoading: productsLoading } = useListProducts({ search: debouncedSearch || undefined });
   const { data: categories } = useListCategories();
   const { data: settings } = useGetSettings();
   

@@ -6,7 +6,7 @@ import {
   useVoidSale,
   useGetSettings,
 } from '@/lib/hooks';
-import { formatMoney, formatDate } from '@/lib/utils';
+import { formatMoney, formatDate, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -38,6 +38,7 @@ import type { SaleStatus, PaymentMethod } from '@/types';
 
 export default function Sales() {
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 250);
   const [statusFilter, setStatusFilter] = useState<SaleStatus | ''>('');
   const [paymentFilter, setPaymentFilter] = useState<PaymentMethod | ''>('');
 
@@ -48,7 +49,7 @@ export default function Sales() {
   const isOwner = settings?.activeRole === 'owner';
 
   const { data: sales, isLoading } = useListSales({
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     status: statusFilter as SaleStatus || undefined,
     paymentMethod: paymentFilter as PaymentMethod || undefined,
   });

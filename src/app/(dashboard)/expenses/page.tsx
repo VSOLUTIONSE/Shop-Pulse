@@ -6,7 +6,7 @@ import {
   useCreateExpense,
   useDeleteExpense,
 } from '@/lib/hooks';
-import { formatMoney, formatDate, formatShortDate } from '@/lib/utils';
+import { formatMoney, formatShortDate } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

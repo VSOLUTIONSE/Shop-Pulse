@@ -7,7 +7,7 @@ import {
   useGetCustomer,
   useRecordCustomerPayment,
 } from '@/lib/hooks';
-import { formatMoney, formatDate } from '@/lib/utils';
+import { formatMoney, formatDate, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -33,6 +33,7 @@ import { Label } from '@/components/ui/label';
 
 export default function Customers() {
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 250);
   const [activeCustomerId, setActiveCustomerId] = useState<number | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -40,7 +41,7 @@ export default function Customers() {
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [paymentData, setPaymentData] = useState({ amount: '', note: '' });
 
-  const { data: customers, isLoading: customersLoading } = useListCustomers({ search: search || undefined });
+  const { data: customers, isLoading: customersLoading } = useListCustomers({ search: debouncedSearch || undefined });
   const { data: customerDetail, isLoading: detailLoading } = useGetCustomer(activeCustomerId as number);
 
   const createCustomer = useCreateCustomer();

@@ -9,9 +9,15 @@ export const list = query({
     paymentMethod: v.optional(v.union(v.literal("cash"), v.literal("transfer"), v.literal("card"), v.literal("credit"))),
   },
   handler: async (ctx, args) => {
-    let sales = await ctx.db.query("sales").order("desc").collect();
+    let sales;
     if (args.status) {
-      sales = sales.filter((s) => s.status === args.status);
+      sales = await ctx.db
+        .query("sales")
+        .withIndex("by_status_idx", (q) => q.eq("status", args.status!))
+        .order("desc")
+        .collect();
+    } else {
+      sales = await ctx.db.query("sales").order("desc").collect();
     }
     if (args.paymentMethod) {
       sales = sales.filter((s) => s.payments.some((p) => p.method === args.paymentMethod));

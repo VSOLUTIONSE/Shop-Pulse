@@ -24,7 +24,8 @@ export default defineSchema({
     costPriceCents: v.optional(v.number()),
     stockLevel: v.number(),
     lowStockThreshold: v.number(),
-  }).index("by_id_idx", ["id"]),
+  }).index("by_id_idx", ["id"])
+    .index("by_categoryId_idx", ["categoryId"]),
 
   customers: defineTable({
     id: v.number(),
@@ -64,7 +65,8 @@ export default defineSchema({
     customerName: v.optional(v.string()),
     voidReason: v.optional(v.string()),
     voidedAt: v.optional(v.number()),
-  }).index("by_id_idx", ["id"]),
+  }).index("by_id_idx", ["id"])
+    .index("by_status_idx", ["status"]),
 
   expenses: defineTable({
     id: v.number(),

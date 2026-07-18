@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   useListProducts,
   useListCustomers,
   useCreateSale,
   useGetSettings,
 } from '@/lib/hooks';
-import { formatMoney } from '@/lib/utils';
+import { formatMoney, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -50,15 +50,6 @@ interface CartItem {
 type PaymentMethod = 'cash' | 'transfer' | 'card' | 'credit';
 
 const PAGE_SIZE = 50;
-
-function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-  return debounced;
-}
 
 export default function POS() {
   const [search, setSearch] = useState('');
