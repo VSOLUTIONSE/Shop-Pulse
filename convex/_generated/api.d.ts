@@ -18,6 +18,7 @@ import type * as dailySessions from "../dailySessions.js";
 import type * as dashboard from "../dashboard.js";
 import type * as expenses from "../expenses.js";
 import type * as helpers from "../helpers.js";
+import type * as nuke from "../nuke.js";
 import type * as products from "../products.js";
 import type * as sales from "../sales.js";
 import type * as seed from "../seed.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   dashboard: typeof dashboard;
   expenses: typeof expenses;
   helpers: typeof helpers;
+  nuke: typeof nuke;
   products: typeof products;
   sales: typeof sales;
   seed: typeof seed;
