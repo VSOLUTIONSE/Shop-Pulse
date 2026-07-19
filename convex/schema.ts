@@ -43,8 +43,25 @@ export default defineSchema({
     saleId: v.optional(v.number()),
   }).index("by_customerId_idx", ["customerId"]),
 
+  dailySessions: defineTable({
+    id: v.number(),
+    date: v.string(),
+    status: v.union(v.literal("open"), v.literal("closed")),
+    openedAt: v.number(),
+    closedAt: v.optional(v.number()),
+    totalSalesCents: v.number(),
+    totalCostCents: v.number(),
+    totalProfitCents: v.number(),
+    saleCount: v.number(),
+    cashTotal: v.number(),
+    transferTotal: v.number(),
+    cardTotal: v.number(),
+    creditTotal: v.number(),
+  }).index("by_date", ["date"]),
+
   sales: defineTable({
     id: v.number(),
+    sessionId: v.optional(v.number()),
     operatorRole: v.union(v.literal("owner"), v.literal("attendant")),
     status: v.union(v.literal("completed"), v.literal("voided")),
     items: v.array(v.object({
@@ -52,6 +69,7 @@ export default defineSchema({
       productName: v.string(),
       quantity: v.number(),
       unitPriceCents: v.number(),
+      costPriceCents: v.optional(v.number()),
       lineTotalCents: v.number(),
     })),
     payments: v.array(v.object({
@@ -66,7 +84,8 @@ export default defineSchema({
     voidReason: v.optional(v.string()),
     voidedAt: v.optional(v.number()),
   }).index("by_id_idx", ["id"])
-    .index("by_status_idx", ["status"]),
+    .index("by_status_idx", ["status"])
+    .index("by_sessionId_idx", ["sessionId"]),
 
   expenses: defineTable({
     id: v.number(),

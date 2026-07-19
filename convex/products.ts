@@ -101,7 +101,7 @@ export const update = mutation({
     const { id, ...fields } = args;
     const doc = await ctx.db
       .query("products")
-      .withIndex("by_id_idx", (q) => q.eq("id", id))
+      .withIndex("by_id_idx", (q) => q.eq("id", args.id))
       .first();
     if (doc) {
       await ctx.db.patch(doc._id, fields);
@@ -130,6 +130,18 @@ export const restock = mutation({
       previousStock,
       newStock,
     });
+  },
+});
+
+export const remove = mutation({
+  args: { id: v.number() },
+  handler: async (ctx, args) => {
+    const doc = await ctx.db
+      .query("products")
+      .withIndex("by_id_idx", (q) => q.eq("id", args.id))
+      .first();
+    if (!doc) throw new Error("Product not found");
+    await ctx.db.delete(doc._id);
   },
 });
 

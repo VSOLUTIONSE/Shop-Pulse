@@ -1,6 +1,6 @@
 'use client';
 
-import { useGetDashboardSummary, useGetSettings } from '@/lib/hooks';
+import { useGetDashboardSummary, useGetSettings, useGetTodaySession } from '@/lib/hooks';
 import { formatMoney } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,6 +17,7 @@ function formatShortDate(dateStr: string) {
 
 export default function Dashboard() {
   const { data: summary, isLoading } = useGetDashboardSummary();
+  const { data: todaySession } = useGetTodaySession();
   const { data: settings } = useGetSettings();
 
   const isOwner = settings?.activeRole === 'owner';
@@ -39,25 +40,36 @@ export default function Dashboard() {
   const hasData = (summary?.todayRevenueCents ?? 0) > 0 ||
     (summary?.totalDebtCents ?? 0) > 0 ||
     (summary?.recentSales?.length ?? 0) > 0 ||
-    (summary?.lowStockProducts?.length ?? 0) > 0;
+    (summary?.lowStockProducts?.length ?? 0) > 0 ||
+    todaySession?.status === 'open';
 
   if (!hasData) {
+    const isClosed = todaySession?.status === 'closed';
     return (
       <div className="space-y-8 pb-10">
-        <div>
+        <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
-          <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening in sales today.</p>
+          {todaySession && (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+              todaySession.status === 'open' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-muted text-muted-foreground'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${todaySession.status === 'open' ? 'bg-green-500' : 'bg-muted-foreground'}`} />
+              {todaySession.status === 'open' ? 'Sales Open' : 'Sales Closed'}
+            </span>
+          )}
         </div>
         <div className="flex flex-col items-center justify-center py-24 text-center max-w-md mx-auto">
           <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
             <ShoppingBag className="w-10 h-10 text-muted-foreground/40" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Your sales record is empty</h2>
+          <h2 className="text-xl font-semibold mb-2">{isClosed ? 'Today&apos;s sales are closed' : 'Your sales record is empty'}</h2>
           <p className="text-muted-foreground mb-6">
-            Start by adding products, recording sales, and setting up your inventory. Data will appear here once you start recording sales.
+            {isClosed
+              ? 'The daily session has been closed. Open sales in POS to start a new session.'
+              : 'Start by adding products, recording sales, and setting up your inventory. Data will appear here once you start recording sales.'}
           </p>
           <Button asChild>
-            <Link href="/inventory">Add Products</Link>
+            <Link href={isClosed ? '/pos' : '/inventory'}>{isClosed ? 'Go to POS' : 'Add Products'}</Link>
           </Button>
         </div>
       </div>
@@ -68,7 +80,17 @@ export default function Dashboard() {
     <div className="space-y-8 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
+            {todaySession && (
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                todaySession.status === 'open' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-muted text-muted-foreground'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${todaySession.status === 'open' ? 'bg-green-500' : 'bg-muted-foreground'}`} />
+                {todaySession.status === 'open' ? 'Sales Open' : 'Sales Closed'}
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening in sales today.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -90,7 +112,8 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-mono tracking-tight">{formatMoney(summary?.todayRevenueCents)}</div>
+            <div className="text-3xl font-bold font-mono tracking-tight">{formatMoney(todaySession?.totalSalesCents ?? 0)}</div>
+            <p className="text-xs text-muted-foreground mt-1">{todaySession?.saleCount ?? 0} transaction{todaySession?.saleCount !== 1 ? 's' : ''}</p>
           </CardContent>
         </Card>
 
@@ -104,7 +127,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold font-mono tracking-tight text-green-700 dark:text-green-400">
-                {formatMoney(summary?.todayProfitCents)}
+                {formatMoney(todaySession?.totalProfitCents ?? 0)}
               </div>
             </CardContent>
           </Card>

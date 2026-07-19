@@ -108,6 +108,7 @@ export const create = mutation({
     })),
     discountCents: v.optional(v.number()),
     customerId: v.optional(v.number()),
+    sessionId: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const allProducts = await ctx.db.query("products").collect();
@@ -127,6 +128,7 @@ export const create = mutation({
         productName: product.name,
         quantity: item.quantity,
         unitPriceCents: unitPrice,
+        costPriceCents: product.costPriceCents ?? undefined,
         lineTotalCents: lineTotal,
       };
     });
@@ -181,6 +183,7 @@ export const create = mutation({
 
     await ctx.db.insert("sales", {
       id,
+      sessionId: args.sessionId,
       operatorRole,
       status: "completed",
       items: saleItems,

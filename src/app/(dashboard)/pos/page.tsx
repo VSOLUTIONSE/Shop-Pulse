@@ -6,6 +6,9 @@ import {
   useListCustomers,
   useCreateSale,
   useGetSettings,
+  useGetTodaySession,
+  useOpenTodaySession,
+  useCloseTodaySession,
 } from '@/lib/hooks';
 import { formatMoney, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -26,6 +29,8 @@ import {
   Package as PackageIcon,
   ChevronLeft,
   ChevronRight,
+  Play,
+  Square,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -64,6 +69,11 @@ export default function POS() {
   const { data: products, isLoading: productsLoading } = useListProducts();
   const { data: customers } = useListCustomers();
   const { data: settings } = useGetSettings();
+  const { data: todaySession, isLoading: sessionLoading } = useGetTodaySession();
+  const openSession = useOpenTodaySession();
+  const closeSession = useCloseTodaySession();
+
+  const isOpen = todaySession?.status === 'open';
 
   const createSale = useCreateSale();
   const { toast } = useToast();
@@ -145,6 +155,7 @@ export default function POS() {
       payments: [{ method: paymentMethod, amountCents: total }],
       discountCents: discountCents || undefined,
       customerId: paymentMethod === 'credit' ? selectedCustomerId || undefined : undefined,
+      sessionId: todaySession?.id,
     };
 
     createSale.mutate(payload).then(() => {
@@ -158,7 +169,52 @@ export default function POS() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col md:flex-row gap-6 overflow-hidden">
+    <div className="h-[calc(100vh-8rem)] flex flex-col gap-4 overflow-hidden">
+      <div className="shrink-0 flex items-center justify-between gap-4 p-4 bg-card border border-border/50 rounded-xl shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className={`w-3 h-3 rounded-full ${sessionLoading ? 'bg-muted animate-pulse' : isOpen ? 'bg-green-500' : 'bg-red-500'}`} />
+          <div>
+            <p className="text-sm font-semibold">
+              {sessionLoading ? 'Loading...' : isOpen ? 'Sales Open' : 'Sales Closed'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+            </p>
+          </div>
+        </div>
+
+        {!sessionLoading && (
+          <div className="flex items-center gap-2 min-w-0 flex-shrink">
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Revenue</p>
+              <p className="font-mono font-bold text-xs sm:text-sm">{formatMoney(todaySession?.totalSalesCents ?? 0)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Profit</p>
+              <p className={`font-mono font-bold text-xs sm:text-sm ${(todaySession?.totalProfitCents ?? 0) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                {formatMoney(todaySession?.totalProfitCents ?? 0)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Txns</p>
+              <p className="font-mono font-bold text-xs sm:text-sm">{todaySession?.saleCount ?? 0}</p>
+            </div>
+            {isOpen ? (
+              <Button variant="outline" size="sm" onClick={() => closeSession.mutate()} disabled={closeSession.isPending}>
+                <Square className="w-4 h-4 mr-1.5 text-red-500" />
+                Close Sales
+              </Button>
+            ) : (
+              <Button size="sm" onClick={() => openSession.mutate()} disabled={openSession.isPending}>
+                <Play className="w-4 h-4 mr-1.5" />
+                Open Sales
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-6 flex-1 min-h-0">
       <div className="max-md:h-[55%] max-md:flex-none flex-1 flex flex-col min-h-0 min-w-0 bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
         <div className="p-4 border-b border-border/50 bg-muted/20 shrink-0">
           <div className="relative">
@@ -278,12 +334,14 @@ export default function POS() {
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="min-h-full flex flex-col p-4">
+          <div className="p-4">
             {cart.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
-                <ShoppingCart className="w-12 h-12 mb-4 opacity-20" />
-                <p>Cart is empty</p>
-                <p className="text-sm mt-1 opacity-70">Click products to add them</p>
+              <div className="flex items-center justify-center text-muted-foreground min-h-[200px]">
+                <div className="flex flex-col items-center">
+                  <ShoppingCart className="w-12 h-12 mb-4 opacity-20" />
+                  <p>Cart is empty</p>
+                  <p className="text-sm mt-1 opacity-70">Click products to add them</p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -319,49 +377,46 @@ export default function POS() {
                 ))}
               </div>
             )}
-
-            <div className={cart.length === 0 ? '' : 'mt-auto pt-4 border-t border-border/50'}>
-              <div className="space-y-2 text-sm mb-4">
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span className="font-mono">{formatMoney(subtotal)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Discount</span>
-                  <div className="w-20 md:w-24">
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={discountCents === 0 ? '' : (discountCents / 100).toFixed(2)}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value);
-                        if (isNaN(val)) setDiscountCents(0);
-                        else setDiscountCents(Math.round(val * 100));
-                      }}
-                      className="h-7 md:h-8 text-right font-mono text-xs md:text-sm"
-                      placeholder="0.00"
-                    />
-                  </div>
-                </div>
-                <Separator className="my-2" />
-                <div className="flex justify-between font-bold text-lg md:text-xl">
-                  <span>Total</span>
-                  <span className="font-mono text-primary">{formatMoney(total)}</span>
-                </div>
-              </div>
-
-              <Button
-                className="w-full h-11 md:h-14 text-base md:text-lg font-bold"
-                size="lg"
-                disabled={cart.length === 0}
-                onClick={() => setCheckoutOpen(true)}
-              >
-                Charge {formatMoney(total)}
-              </Button>
-            </div>
           </div>
         </ScrollArea>
+
+        <div className="shrink-0 border-t border-border/50 p-4 space-y-2 text-sm">
+          <div className="flex justify-between text-muted-foreground">
+            <span>Subtotal</span>
+            <span className="font-mono">{formatMoney(subtotal)}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Discount</span>
+            <div className="w-20 md:w-24">
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={discountCents === 0 ? '' : (discountCents / 100).toFixed(2)}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (isNaN(val)) setDiscountCents(0);
+                  else setDiscountCents(Math.round(val * 100));
+                }}
+                className="h-7 md:h-8 text-right font-mono text-xs md:text-sm"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+          <Separator className="my-2" />
+          <div className="flex justify-between font-bold text-lg md:text-xl">
+            <span>Total</span>
+            <span className="font-mono text-primary">{formatMoney(total)}</span>
+          </div>
+          <Button
+            className="w-full h-11 md:h-14 text-base md:text-lg font-bold"
+            size="lg"
+            disabled={cart.length === 0}
+            onClick={() => setCheckoutOpen(true)}
+          >
+            Charge {formatMoney(total)}
+          </Button>
+        </div>
       </div>
 
       <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
@@ -445,6 +500,7 @@ export default function POS() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   useListProducts, 
   useCreateProduct,
   useUpdateProduct,
+  useDeleteProduct,
   useRestockProduct,
   useCorrectProductStock,
   useListCategories,
@@ -30,7 +31,8 @@ import {
   PackagePlus,
   Settings2,
   FolderPlus,
-  AlertTriangle
+  AlertTriangle,
+  Trash2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -39,6 +41,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 
@@ -71,13 +74,29 @@ export default function Inventory() {
 
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
+  const deleteProduct = useDeleteProduct();
   const restockProduct = useRestockProduct();
   const correctProduct = useCorrectProductStock();
   const createCategory = useCreateCategory();
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
   const handleProductSubmit = () => {
+    if (!formData.name.trim()) {
+      toast({ title: 'Product name is required', variant: 'destructive' });
+      return;
+    }
+    if (!formData.categoryId) {
+      toast({ title: 'Please select a category', variant: 'destructive' });
+      return;
+    }
+    if (!formData.sellingPrice || Number(formData.sellingPrice) <= 0) {
+      toast({ title: 'Selling price must be greater than 0', variant: 'destructive' });
+      return;
+    }
+
     const payload = {
-      name: formData.name,
+      name: formData.name.trim(),
       categoryId: Number(formData.categoryId),
       barcode: formData.barcode || undefined,
       sellingPriceCents: Math.round(Number(formData.sellingPrice) * 100),
@@ -119,6 +138,15 @@ export default function Inventory() {
     ).then(() => {
       toast({ title: "Inventory corrected" });
       setCorrectModalOpen(false);
+    });
+  };
+
+  const handleDelete = () => {
+    if (!deleteTarget) return;
+    deleteProduct.mutate(deleteTarget.id).then(() => {
+      toast({ title: `${deleteTarget.name} deleted` });
+      setDeleteConfirmOpen(false);
+      setDeleteTarget(null);
     });
   };
 
@@ -263,6 +291,19 @@ export default function Inventory() {
                     >
                       <Settings2 className="w-4 h-4 text-muted-foreground" />
                     </Button>
+                    {isOwner && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        title="Delete"
+                        onClick={() => {
+                          setDeleteTarget(product);
+                          setDeleteConfirmOpen(true);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
@@ -301,12 +342,12 @@ export default function Inventory() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Selling Price ($)</Label>
+                <Label>Selling Price (₦)</Label>
                 <Input type="number" step="0.01" value={formData.sellingPrice} onChange={e => setFormData({...formData, sellingPrice: e.target.value})} placeholder="0.00" />
               </div>
               {isOwner && (
                 <div className="grid gap-2">
-                  <Label>Cost Price ($)</Label>
+                  <Label>Cost Price (₦)</Label>
                   <Input type="number" step="0.01" value={formData.costPrice} onChange={e => setFormData({...formData, costPrice: e.target.value})} placeholder="0.00" />
                 </div>
               )}
@@ -324,7 +365,7 @@ export default function Inventory() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setProductModalOpen(false)}>Cancel</Button>
-            <Button onClick={handleProductSubmit} disabled={createProduct.isPending || updateProduct.isPending}>Save Product</Button>
+            <Button onClick={handleProductSubmit} disabled={!formData.name.trim() || !formData.categoryId || !formData.sellingPrice || Number(formData.sellingPrice) <= 0 || createProduct.isPending || updateProduct.isPending}>Save Product</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -348,7 +389,7 @@ export default function Inventory() {
             </div>
             {isOwner && (
               <div className="grid gap-2">
-                <Label>New Cost Price ($) (Updates catalog)</Label>
+                <Label>New Cost Price (₦) (Updates catalog)</Label>
                 <Input type="number" step="0.01" value={restockData.costPrice} onChange={e => setRestockData({...restockData, costPrice: e.target.value})} placeholder="0.00" />
               </div>
             )}
@@ -388,6 +429,26 @@ export default function Inventory() {
             <Button variant="outline" onClick={() => setCorrectModalOpen(false)}>Cancel</Button>
             <Button className="bg-orange-600 hover:bg-orange-700 text-white" onClick={handleCorrection} disabled={!correctData.quantityChange || !correctData.reason || correctProduct.isPending}>
               Log Correction
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="w-5 h-5" /> Delete Product
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setDeleteConfirmOpen(false); setDeleteTarget(null); }}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteProduct.isPending}>
+              {deleteProduct.isPending ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>

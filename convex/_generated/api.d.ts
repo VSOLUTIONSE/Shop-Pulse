@@ -14,6 +14,7 @@ import type * as aiReportsGenerate from "../aiReportsGenerate.js";
 import type * as aiReportsHelpers from "../aiReportsHelpers.js";
 import type * as categories from "../categories.js";
 import type * as customers from "../customers.js";
+import type * as dailySessions from "../dailySessions.js";
 import type * as dashboard from "../dashboard.js";
 import type * as expenses from "../expenses.js";
 import type * as helpers from "../helpers.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   aiReportsHelpers: typeof aiReportsHelpers;
   categories: typeof categories;
   customers: typeof customers;
+  dailySessions: typeof dailySessions;
   dashboard: typeof dashboard;
   expenses: typeof expenses;
   helpers: typeof helpers;

@@ -4,8 +4,8 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { useState, useCallback } from "react";
 import { api } from "../../convex/_generated/api";
 import type {
-  ProductInput, ProductUpdate, CategoryInput, CustomerInput,
-  CustomerLedgerEntry, SaleInput, SaleStatus, PaymentMethod,
+  Product, ProductInput, ProductUpdate,
+  SaleInput, SaleStatus, PaymentMethod,
   BackupBundle, ExpenseInput,
 } from '@/types';
 
@@ -33,12 +33,22 @@ export function useListCategories() {
 }
 
 export function useCreateCategory() {
-  const mutate = useMutation(api.categories.create);
+  const mutate = useMutation(api.categories.create).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.categories.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.categories.list, {}, [...cur, { id: -Date.now(), name: args.name }]);
+    }
+  });
   return { mutate: (d: { name: string }) => mutate({ name: d.name }), isPending: false };
 }
 
 export function useDeleteCategory() {
-  const mutate = useMutation(api.categories.remove);
+  const mutate = useMutation(api.categories.remove).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.categories.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.categories.list, {}, cur.filter(c => c.id !== args.id));
+    }
+  });
   return { mutate: (id: number) => mutate({ id }), isPending: false };
 }
 
@@ -51,7 +61,20 @@ export function useGetProduct(id: number) {
 }
 
 export function useCreateProduct() {
-  const mutate = useMutation(api.products.create);
+  const mutate = useMutation(api.products.create).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.products.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.products.list, {}, [...cur, {
+        id: -Date.now(), name: args.name, categoryId: args.categoryId,
+        categoryName: '', barcode: args.barcode ?? null,
+        sellingPriceCents: args.sellingPriceCents,
+        costPriceCents: args.costPriceCents ?? null,
+        stockLevel: args.stockLevel, lowStockThreshold: args.lowStockThreshold,
+        isLowStock: args.stockLevel <= args.lowStockThreshold,
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      } as Product]);
+    }
+  });
   return {
     mutate: (d: ProductInput) => mutate({
       name: d.name, categoryId: d.categoryId, barcode: d.barcode,
@@ -63,17 +86,52 @@ export function useCreateProduct() {
 }
 
 export function useUpdateProduct() {
-  const mutate = useMutation(api.products.update);
+  const mutate = useMutation(api.products.update).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.products.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.products.list, {}, cur.map(p =>
+        p.id === args.id ? { ...p, ...args } as unknown as Product : p
+      ));
+    }
+  });
   return { mutate: (id: number, d: ProductUpdate) => mutate({ id, ...d }), isPending: false };
 }
 
+export function useDeleteProduct() {
+  const mutate = useMutation(api.products.remove).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.products.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.products.list, {}, cur.filter(p => p.id !== args.id));
+    }
+  });
+  return { mutate: (id: number) => mutate({ id }), isPending: false };
+}
+
 export function useRestockProduct() {
-  const mutate = useMutation(api.products.restock);
+  const mutate = useMutation(api.products.restock).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.products.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.products.list, {}, cur.map(p =>
+        p.id === args.id
+          ? { ...p, stockLevel: p.stockLevel + args.quantity, costPriceCents: args.costPriceCents }
+          : p
+      ));
+    }
+  });
   return { mutate: (id: number, q: number, c: number) => mutate({ id, quantity: q, costPriceCents: c }), isPending: false };
 }
 
 export function useCorrectProductStock() {
-  const mutate = useMutation(api.products.correctStock);
+  const mutate = useMutation(api.products.correctStock).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.products.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.products.list, {}, cur.map(p =>
+        p.id === args.id
+          ? { ...p, stockLevel: p.stockLevel + args.quantityChange }
+          : p
+      ));
+    }
+  });
   return { mutate: (id: number, q: number, r: string) => mutate({ id, quantityChange: q, reason: r }), isPending: false };
 }
 
@@ -90,7 +148,15 @@ export function useGetCustomer(id: number) {
 }
 
 export function useCreateCustomer() {
-  const mutate = useMutation(api.customers.create);
+  const mutate = useMutation(api.customers.create).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.customers.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.customers.list, {}, [...cur, {
+        id: -Date.now(), name: args.name, phone: args.phone ?? null,
+        balanceCents: 0, createdAt: new Date().toISOString(),
+      }]);
+    }
+  });
   return { mutate: (d: { name: string; phone?: string }) => mutate({ name: d.name, phone: d.phone }), isPending: false };
 }
 
@@ -112,7 +178,7 @@ export function useGetSale(id: number) {
 const toSalePayload = (d: SaleInput) => ({
   items: d.items.map(i => ({ productId: i.productId, quantity: i.quantity })),
   payments: d.payments.map(p => ({ method: p.method, amountCents: p.amountCents })),
-  discountCents: d.discountCents, customerId: d.customerId,
+  discountCents: d.discountCents, customerId: d.customerId, sessionId: d.sessionId,
 });
 
 export function useCreateSale() {
@@ -130,12 +196,26 @@ export function useListExpenses() {
 }
 
 export function useCreateExpense() {
-  const mutate = useMutation(api.expenses.create);
+  const mutate = useMutation(api.expenses.create).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.expenses.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.expenses.list, {}, [...cur, {
+        id: -Date.now(), category: args.category, description: args.description,
+        amountCents: args.amountCents, expenseDate: args.expenseDate,
+        createdAt: new Date().toISOString(),
+      }]);
+    }
+  });
   return { mutate: (d: ExpenseInput) => mutate(d), isPending: false };
 }
 
 export function useDeleteExpense() {
-  const mutate = useMutation(api.expenses.remove);
+  const mutate = useMutation(api.expenses.remove).withOptimisticUpdate((ls, args) => {
+    const cur = ls.getQuery(api.expenses.list, {});
+    if (cur !== undefined) {
+      ls.setQuery(api.expenses.list, {}, cur.filter(e => e.id !== args.id));
+    }
+  });
   return { mutate: (id: number) => mutate({ id }), isPending: false };
 }
 
@@ -169,6 +249,44 @@ export function useSendAiChatMessage() {
     return act({ message: msg }).then((r) => cb?.(r as any)).finally(() => sp(false));
   }, [act]);
   return { mutate, isPending: p };
+}
+
+export function useGetTodaySession() {
+  return useCq(() => useQuery(api.dailySessions.getToday));
+}
+
+export function useOpenTodaySession() {
+  const mutate = useMutation(api.dailySessions.open).withOptimisticUpdate((ls) => {
+    const cur: any = ls.getQuery(api.dailySessions.getToday, {});
+    if (cur) {
+      ls.setQuery(api.dailySessions.getToday, {}, {
+        ...cur, status: 'open', closedAt: null,
+      });
+    }
+  });
+  const [p, sp] = useState(false);
+  const m = useCallback(() => {
+    sp(true);
+    return mutate({}).finally(() => sp(false));
+  }, [mutate]);
+  return { mutate: m, isPending: p };
+}
+
+export function useCloseTodaySession() {
+  const mutate = useMutation(api.dailySessions.close).withOptimisticUpdate((ls) => {
+    const cur: any = ls.getQuery(api.dailySessions.getToday, {});
+    if (cur) {
+      ls.setQuery(api.dailySessions.getToday, {}, {
+        ...cur, status: 'closed', closedAt: Date.now(),
+      });
+    }
+  });
+  const [p, sp] = useState(false);
+  const m = useCallback(() => {
+    sp(true);
+    return mutate({}).finally(() => sp(false));
+  }, [mutate]);
+  return { mutate: m, isPending: p };
 }
 
 export async function exportBackup(): Promise<BackupBundle> {

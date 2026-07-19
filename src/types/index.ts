@@ -170,6 +170,7 @@ export interface SaleInput {
   payments: SalePaymentInput[];
   discountCents?: number;
   customerId?: number;
+  sessionId?: number;
 }
 
 export interface VoidInput {
