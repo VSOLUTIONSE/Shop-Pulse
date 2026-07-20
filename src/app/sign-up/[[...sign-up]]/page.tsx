@@ -34,20 +34,18 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const { error: createError } = await signUp.create({ emailAddress: email, password });
-      if (createError) throw createError;
+      const { error: pwdError } = await signUp.password({ emailAddress: email, password });
+      if (pwdError) throw pwdError;
 
-      if (signUp.status === 'complete') {
-        const { error: finalizeError } = await signUp.finalize();
-        if (finalizeError) throw finalizeError;
+      const { error: finalizeError } = await signUp.finalize();
+      if (!finalizeError) {
         router.push('/');
-      } else if (signUp.status === 'missing_requirements') {
-        const { error: sendError } = await signUp.verifications.sendEmailCode();
-        if (sendError) throw sendError;
-        setStep('verify');
-      } else {
-        setError('Something went wrong. Please try again.');
+        return;
       }
+
+      const { error: sendError } = await signUp.verifications.sendEmailCode();
+      if (sendError) { setError('Something went wrong.'); return; }
+      setStep('verify');
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message
@@ -71,13 +69,9 @@ export default function SignUpPage() {
       const { error: verifyError } = await signUp.verifications.verifyEmailCode({ code });
       if (verifyError) throw verifyError;
 
-      if (signUp.status === 'complete') {
-        const { error: finalizeError } = await signUp.finalize();
-        if (finalizeError) throw finalizeError;
-        router.push('/');
-      } else {
-        setError('Invalid verification code. Please try again.');
-      }
+      const { error: finalizeError } = await signUp.finalize();
+      if (finalizeError) { setError('Invalid verification code.'); return; }
+      router.push('/');
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message

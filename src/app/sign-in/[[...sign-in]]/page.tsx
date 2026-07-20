@@ -25,16 +25,12 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const { error: createError } = await signIn.create({ identifier: email, password });
-      if (createError) throw createError;
+      const { error: pwdError } = await signIn.password({ identifier: email, password });
+      if (pwdError) throw pwdError;
 
-      if (signIn.status === 'complete') {
-        const { error: finalizeError } = await signIn.finalize();
-        if (finalizeError) throw finalizeError;
-        router.push('/');
-      } else {
-        setError('Please complete all required steps.');
-      }
+      const { error: finalizeError } = await signIn.finalize();
+      if (finalizeError) throw finalizeError;
+      router.push('/');
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message
