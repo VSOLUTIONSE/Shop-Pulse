@@ -185,6 +185,7 @@ export default function SignInPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div id="clerk-captcha"></div>
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-foreground">
                   Email

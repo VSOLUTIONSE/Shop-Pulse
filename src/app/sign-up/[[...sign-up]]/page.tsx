@@ -271,6 +271,8 @@ export default function SignUpPage() {
                 )}
               </button>
 
+              <div id="clerk-captcha"></div>
+
               <button
                 type="button"
                 onClick={() => signUp.reset()}
