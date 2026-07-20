@@ -2,39 +2,43 @@
 
 import { useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Store, Loader2 } from 'lucide-react';
 
 export default function SignInPage() {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { signIn, fetchStatus } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const isLoaded = fetchStatus !== 'fetching';
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!isLoaded || loading) return;
+    if (!isLoaded || loading || !signIn) return;
 
     setError('');
     setLoading(true);
 
     try {
-      const result = await signIn.create({ identifier: email, password });
-      if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId });
+      const { error: createError } = await signIn.create({ identifier: email, password });
+      if (createError) throw createError;
+
+      if (signIn.status === 'complete') {
+        const { error: finalizeError } = await signIn.finalize();
+        if (finalizeError) throw finalizeError;
         router.push('/');
       } else {
-        setError('Something went wrong. Please try again.');
+        setError('Please complete all required steps.');
       }
     } catch (err: unknown) {
       const message =
-        err instanceof Error
-          ? err.message
-          : typeof err === 'object' && err !== null && 'errors' in err
-            ? (err as { errors: Array<{ message: string }> }).errors[0]?.message
+        err instanceof Error ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+            ? (err as { message: string }).message
             : 'Invalid email or password.';
       setError(message);
     } finally {
@@ -113,12 +117,12 @@ export default function SignInPage() {
                 )}
               </button>
 
-                <p className="text-center text-sm text-muted-foreground">
-                  Don't have an account?{' '}
-                  <Link href="/sign-up" className="text-primary font-medium hover:underline">
-                    Create one
-                  </Link>
-                </p>
+              <p className="text-center text-sm text-muted-foreground">
+                Don&apos;t have an account?{' '}
+                <Link href="/sign-up" className="text-primary font-medium hover:underline">
+                  Create one
+                </Link>
+              </p>
             </form>
           </div>
         </div>

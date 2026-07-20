@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Store, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function SignUpPage() {
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const { signUp, fetchStatus } = useSignUp();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,9 +17,11 @@ export default function SignUpPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const isLoaded = fetchStatus !== 'fetching';
+
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (!isLoaded || loading) return;
+    if (!isLoaded || loading || !signUp) return;
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
@@ -30,23 +32,25 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const result = await signUp.create({ emailAddress: email, password });
+      const { error: createError } = await signUp.create({ emailAddress: email, password });
+      if (createError) throw createError;
 
-      if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId });
+      if (signUp.status === 'complete') {
+        const { error: finalizeError } = await signUp.finalize();
+        if (finalizeError) throw finalizeError;
         router.push('/');
-      } else if (result.status === 'missing_requirements' && result.unverifiedFields?.includes('email_address')) {
-        await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      } else if (signUp.status === 'missing_requirements') {
+        const { error: sendError } = await signUp.verifications.sendEmailCode();
+        if (sendError) throw sendError;
         setStep('verify');
       } else {
         setError('Something went wrong. Please try again.');
       }
     } catch (err: unknown) {
       const message =
-        err instanceof Error
-          ? err.message
-          : typeof err === 'object' && err !== null && 'errors' in err
-            ? (err as { errors: Array<{ message: string }> }).errors[0]?.message
+        err instanceof Error ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+            ? (err as { message: string }).message
             : 'Something went wrong.';
       setError(message);
     } finally {
@@ -56,26 +60,27 @@ export default function SignUpPage() {
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
-    if (!isLoaded || loading) return;
+    if (!isLoaded || loading || !signUp) return;
 
     setError('');
     setLoading(true);
 
     try {
-      const result = await signUp.attemptEmailAddressVerification({ code });
+      const { error: verifyError } = await signUp.verifications.verifyEmailCode({ code });
+      if (verifyError) throw verifyError;
 
-      if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId });
+      if (signUp.status === 'complete') {
+        const { error: finalizeError } = await signUp.finalize();
+        if (finalizeError) throw finalizeError;
         router.push('/');
       } else {
         setError('Invalid verification code. Please try again.');
       }
     } catch (err: unknown) {
       const message =
-        err instanceof Error
-          ? err.message
-          : typeof err === 'object' && err !== null && 'errors' in err
-            ? (err as { errors: Array<{ message: string }> }).errors[0]?.message
+        err instanceof Error ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+            ? (err as { message: string }).message
             : 'Invalid verification code.';
       setError(message);
     } finally {
@@ -181,7 +186,8 @@ export default function SignUpPage() {
             ) : (
               <form onSubmit={handleVerify} className="space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  We sent a verification code to <span className="font-medium text-foreground">{email}</span>
+                  We sent a verification code to{' '}
+                  <span className="font-medium text-foreground">{email}</span>
                 </p>
 
                 <div className="space-y-2">
