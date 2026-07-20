@@ -1,27 +1,119 @@
-import { SignIn } from '@clerk/nextjs';
+'use client';
+
+import { useSignIn } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Store, Loader2 } from 'lucide-react';
 
 export default function SignInPage() {
+  const { isLoaded, signIn, setActive } = useSignIn();
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!isLoaded || loading) return;
+
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = await signIn.create({ identifier: email, password });
+      if (result.status === 'complete') {
+        await setActive({ session: result.createdSessionId });
+        router.push('/');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'errors' in err
+            ? (err as { errors: Array<{ message: string }> }).errors[0]?.message
+            : 'Invalid email or password.';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <SignIn
-          appearance={{
-            elements: {
-              rootBox: 'mx-auto',
-              card: 'shadow-lg border border-border/50',
-              headerTitle: 'text-foreground',
-              headerSubtitle: 'text-muted-foreground',
-              socialButtonsBlockButton: 'border-border/50 text-foreground hover:bg-muted/50',
-              dividerLine: 'bg-border/50',
-              dividerText: 'text-muted-foreground',
-              formFieldLabel: 'text-foreground',
-              formFieldInput: 'bg-background border-border/50 text-foreground',
-              footerActionLink: 'text-primary',
-              formButtonPrimary: 'bg-primary hover:bg-primary/90',
-            },
-          }}
-          fallbackRedirectUrl="/"
-        />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+      <div className="w-full max-w-sm">
+        <div className="rounded-xl border border-border/50 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
+          <div className="p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <div className="mx-auto h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Store className="h-7 w-7 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                SalesPulse
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Sign in to your account
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-foreground">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full h-10 px-3 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-foreground">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-10 px-3 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                />
+              </div>
+
+              {error && (
+                <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-3 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading || !isLoaded}
+                className="w-full h-10 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2 transition-colors"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

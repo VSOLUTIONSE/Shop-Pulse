@@ -14,6 +14,7 @@ import {
   LineChart,
   Settings,
   Store,
+  LogOut,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -28,7 +29,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { UserButton } from '@clerk/nextjs';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -36,6 +37,8 @@ function SidebarNav() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
   const { isOwner, isLoaded } = useRole();
+  const { user } = useUser();
+  const { signOut } = useClerk();
   const { data: settings } = useGetSettings();
 
   const navItems = [
@@ -79,26 +82,27 @@ function SidebarNav() {
           })}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t border-border/50 p-4">
+      <SidebarFooter className="border-t border-border/50 p-4 space-y-3">
         <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-          <UserButton
-            appearance={{
-              elements: {
-                userButtonAvatarBox: 'h-8 w-8 shrink-0',
-                userButtonOuterIdentifier: 'text-sm font-semibold truncate text-foreground',
-                userButtonTrigger: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md',
-              },
-            }}
-            userProfileMode="navigation"
-            userProfileUrl="/user-profile"
-          />
-          <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden leading-tight">
-            <span className="text-sm font-semibold truncate capitalize">
+          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+            {user ? (user.firstName?.[0] ?? user.emailAddresses[0]?.emailAddress?.[0] ?? '?').toUpperCase() : '?'}
+          </div>
+          <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden leading-tight min-w-0">
+            <span className="text-sm font-medium truncate">
+              {user ? (user.fullName || user.emailAddresses[0]?.emailAddress || 'User') : '...'}
+            </span>
+            <span className="text-xs font-semibold text-primary truncate capitalize">
               {isOwner ? 'Owner' : 'Staff'}
             </span>
-            <span className="text-xs text-muted-foreground truncate">{isOwner ? 'Full Access' : 'Limited Access'}</span>
           </div>
         </div>
+        <button
+          onClick={() => signOut({ redirectUrl: '/sign-in' })}
+          className="group-data-[collapsible=icon]:hidden flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </button>
       </SidebarFooter>
     </>
   );
