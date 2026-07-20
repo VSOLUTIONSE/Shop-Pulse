@@ -4,7 +4,6 @@ import { useState } from 'react';
 import {
   useListSales,
   useVoidSale,
-  useGetSettings,
 } from '@/lib/hooks';
 import { formatMoney, formatDate, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -44,9 +43,6 @@ export default function Sales() {
 
   const [voidSaleId, setVoidSaleId] = useState<number | null>(null);
   const [voidReason, setVoidReason] = useState('');
-
-  const { data: settings } = useGetSettings();
-  const isOwner = settings?.activeRole === 'owner';
 
   const { data: sales, isLoading } = useListSales({
     search: debouncedSearch || undefined,
@@ -172,7 +168,7 @@ export default function Sales() {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      {isOwner && sale.status === 'completed' && (
+                      {sale.status === 'completed' && (
                         <Button
                           variant="ghost"
                           size="sm"

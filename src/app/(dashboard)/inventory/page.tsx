@@ -12,6 +12,7 @@ import {
   useCreateCategory,
   useGetSettings
 } from '@/lib/hooks';
+import { useRole } from '@/hooks/use-role';
 import { formatMoney, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -52,8 +53,7 @@ export default function Inventory() {
   const { data: products, isLoading: productsLoading } = useListProducts({ search: debouncedSearch || undefined });
   const { data: categories } = useListCategories();
   const { data: settings } = useGetSettings();
-  
-  const isOwner = settings?.activeRole === 'owner';
+  const { isOwner } = useRole();
   const { toast } = useToast();
 
   // Modals state

@@ -4,8 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import {
   useListAiChatMessages,
   useSendAiChatMessage,
-  useGetSettings,
 } from '@/lib/hooks';
+import { useRole } from '@/hooks/use-role';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -23,10 +23,10 @@ import { useToast } from '@/hooks/use-toast';
 import type { AiChatMessage } from '@/types';
 
 export function ChatWidget() {
-  const { data: settings } = useGetSettings();
-  const isOwner = settings?.activeRole === 'owner';
+  const { isOwner, isLoaded } = useRole();
   const [open, setOpen] = useState(false);
 
+  if (!isLoaded) return null;
   if (!isOwner) return null;
 
   return (

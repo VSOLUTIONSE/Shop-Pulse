@@ -3,8 +3,8 @@
 import {
   useListAiReports,
   useGenerateAiReport,
-  useGetSettings,
 } from '@/lib/hooks';
+import { useRole } from '@/hooks/use-role';
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,12 +14,15 @@ import { useToast } from '@/hooks/use-toast';
 import { Fragment } from 'react';
 
 export default function Reports() {
-  const { data: settings } = useGetSettings();
-  const isOwner = settings?.activeRole === 'owner';
+  const { isOwner, isLoaded } = useRole();
 
   const { data: reports, isLoading } = useListAiReports();
   const generateReport = useGenerateAiReport();
   const { toast } = useToast();
+
+  if (!isLoaded) {
+    return <div className="p-8">Loading...</div>;
+  }
 
   if (!isOwner) {
     return (
@@ -29,8 +32,7 @@ export default function Reports() {
         </div>
         <h2 className="text-2xl font-bold mb-2">Access Restricted</h2>
         <p className="text-muted-foreground">
-          AI Business Reports contain sensitive financial analysis and are only available to the Owner.
-          Switch roles in Settings to access this feature.
+          AI Business Reports are only available to the Owner.
         </p>
       </div>
     );

@@ -1,4 +1,4 @@
-export const Role = { owner: 'owner', attendant: 'attendant' } as const;
+export const Role = { owner: 'owner', staff: 'staff' } as const;
 export type Role = (typeof Role)[keyof typeof Role];
 
 export const SaleStatus = { completed: 'completed', voided: 'voided' } as const;

@@ -178,7 +178,7 @@ export const create = mutation({
     }
 
     const settings = await ctx.db.query("settings").first();
-    const operatorRole = settings?.activeRole ?? "owner";
+    const operatorRole = settings?.activeRole === "attendant" ? "staff" : (settings?.activeRole ?? "owner");
     const id = await getNextId(ctx, "sales");
 
     await ctx.db.insert("sales", {

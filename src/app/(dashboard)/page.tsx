@@ -1,6 +1,7 @@
 'use client';
 
-import { useGetDashboardSummary, useGetSettings, useGetTodaySession } from '@/lib/hooks';
+import { useGetDashboardSummary, useGetTodaySession } from '@/lib/hooks';
+import { useRole } from '@/hooks/use-role';
 import { formatMoney } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,9 +19,7 @@ function formatShortDate(dateStr: string) {
 export default function Dashboard() {
   const { data: summary, isLoading } = useGetDashboardSummary();
   const { data: todaySession } = useGetTodaySession();
-  const { data: settings } = useGetSettings();
-
-  const isOwner = settings?.activeRole === 'owner';
+  const { isOwner } = useRole();
 
   if (isLoading) {
     return (

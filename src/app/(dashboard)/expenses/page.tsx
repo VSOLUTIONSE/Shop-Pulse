@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   useListExpenses,
   useCreateExpense,
   useDeleteExpense,
 } from '@/lib/hooks';
+import { useRole } from '@/hooks/use-role';
 import { formatMoney, formatShortDate } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,6 +33,16 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -50,8 +62,21 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 export default function Expenses() {
+  const { isOwner, isLoaded } = useRole();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && !isOwner) {
+      router.push('/');
+    }
+  }, [isLoaded, isOwner, router]);
+
+  if (!isLoaded) return <div className="p-8">Loading...</div>;
+  if (!isOwner) return null;
+
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
 
   const [formData, setFormData] = useState({
     category: 'other' as string,
@@ -83,12 +108,12 @@ export default function Expenses() {
     });
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this expense record?")) {
-      deleteExpense.mutate(id).then(() => {
-        toast({ title: "Expense deleted" });
-      });
-    }
+  const confirmDeleteExpense = () => {
+    if (deleteTarget === null) return;
+    deleteExpense.mutate(deleteTarget).then(() => {
+      toast({ title: "Expense deleted" });
+      setDeleteTarget(null);
+    });
   };
 
   const totalExpenses = filteredExpenses?.reduce((acc, exp) => acc + exp.amountCents, 0) || 0;
@@ -161,7 +186,7 @@ export default function Expenses() {
                         {formatMoney(exp.amountCents)}
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(exp.id)}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setDeleteTarget(exp.id)}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </TableCell>
@@ -229,6 +254,23 @@ export default function Expenses() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Expense?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this expense record? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={confirmDeleteExpense}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

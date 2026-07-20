@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useGetSettings } from '@/lib/hooks';
+import { useRole } from '@/hooks/use-role';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -33,8 +34,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 function SidebarNav() {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
-  const { data: settings, isLoading } = useGetSettings();
-  const isOwner = settings?.activeRole === 'owner';
+  const { isOwner, isLoaded } = useRole();
+  const { data: settings } = useGetSettings();
 
   const navItems = [
     { label: 'Overview', href: '/', icon: LayoutDashboard, exact: true },
@@ -42,9 +43,9 @@ function SidebarNav() {
     { label: 'Sales Logs', href: '/sales', icon: Receipt },
     { label: 'Inventory', href: '/inventory', icon: Package },
     { label: 'Customers', href: '/customers', icon: Users },
-    { label: 'Expenses', href: '/expenses', icon: Wallet },
+    ...(isOwner ? [{ label: 'Expenses', href: '/expenses', icon: Wallet }] : []),
     ...(isOwner ? [{ label: 'AI Reports', href: '/reports', icon: LineChart }] : []),
-    { label: 'Settings', href: '/settings', icon: Settings },
+    ...(isOwner ? [{ label: 'Settings', href: '/settings', icon: Settings }] : []),
   ];
 
   return (
@@ -53,7 +54,7 @@ function SidebarNav() {
         <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-primary">
           <Store className="h-6 w-6" />
           <span className="truncate group-data-[collapsible=icon]:hidden">
-            {isLoading ? <Skeleton className="h-6 w-24" /> : settings?.shopName || 'SalesPulse'}
+            {settings === undefined ? <Skeleton className="h-6 w-24" /> : settings?.shopName || 'SalesPulse'}
           </span>
         </div>
       </SidebarHeader>
@@ -80,13 +81,13 @@ function SidebarNav() {
       <SidebarFooter className="border-t border-border/50 p-4">
         <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
-            {isLoading ? '?' : settings?.activeRole?.[0].toUpperCase()}
+            {isLoaded ? (isOwner ? 'O' : 'S') : '?'}
           </div>
           <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold truncate">
-              {isLoading ? <Skeleton className="h-4 w-20" /> : settings?.activeRole === 'owner' ? settings?.ownerLabel : settings?.attendantLabel}
+            <span className="text-sm font-semibold truncate capitalize">
+              {isLoaded ? (isOwner ? 'Owner' : 'Staff') : '...'}
             </span>
-            <span className="text-xs text-muted-foreground truncate">Active Role</span>
+            <span className="text-xs text-muted-foreground truncate">Signed In</span>
           </div>
         </div>
       </SidebarFooter>
@@ -95,7 +96,7 @@ function SidebarNav() {
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const { data: settings } = useGetSettings();
+  const { isOwner, isLoaded } = useRole();
 
   return (
     <SidebarProvider>
@@ -108,9 +109,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <header className="h-16 flex items-center gap-4 border-b border-border/40 bg-card/50 px-6 shrink-0 sticky top-0 z-10 backdrop-blur-sm">
             <SidebarTrigger />
             <div className="flex-1" />
-            {settings && (
+            {isLoaded && (
               <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold capitalize tracking-wide">
-                {settings.activeRole} View
+                {isOwner ? 'Owner View' : 'Staff View'}
               </Badge>
             )}
           </header>

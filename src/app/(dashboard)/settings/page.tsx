@@ -10,9 +10,19 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Save, Download, Upload, AlertTriangle } from 'lucide-react';
 import { exportBackup } from '@/lib/hooks';
 
@@ -21,14 +31,13 @@ export default function SettingsPage() {
   const updateSettings = useUpdateSettings();
   const importBackup = useImportBackup();
   const [isExporting, setIsExporting] = useState(false);
+  const [pendingImport, setPendingImport] = useState<File | null>(null);
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     shopName: '',
-    ownerLabel: '',
-    attendantLabel: '',
     lowStockThreshold: '',
   });
 
@@ -36,8 +45,6 @@ export default function SettingsPage() {
     if (settings) {
       setFormData({
         shopName: settings.shopName,
-        ownerLabel: settings.ownerLabel,
-        attendantLabel: settings.attendantLabel,
         lowStockThreshold: settings.lowStockThreshold.toString(),
       });
     }
@@ -46,18 +53,9 @@ export default function SettingsPage() {
   const handleSaveSettings = () => {
     updateSettings.mutate({
       shopName: formData.shopName,
-      ownerLabel: formData.ownerLabel,
-      attendantLabel: formData.attendantLabel,
       lowStockThreshold: Number(formData.lowStockThreshold),
     }).then(() => {
       toast({ title: "Settings saved successfully" });
-    });
-  };
-
-  const handleRoleToggle = (checked: boolean) => {
-    const newRole = checked ? 'owner' : 'attendant';
-    updateSettings.mutate({ activeRole: newRole }).then(() => {
-      toast({ title: `Role switched to ${newRole}` });
     });
   };
 
@@ -83,15 +81,15 @@ export default function SettingsPage() {
     }
   };
 
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setPendingImport(file);
+    e.target.value = '';
+  };
 
-    if (!confirm("WARNING: Importing a backup will overwrite ALL current data in the database. Are you absolutely sure?")) {
-      e.target.value = '';
-      return;
-    }
-
+  const confirmImport = () => {
+    if (!pendingImport) return;
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
@@ -104,8 +102,8 @@ export default function SettingsPage() {
         toast({ title: "Invalid backup file", variant: "destructive" });
       }
     };
-    reader.readAsText(file);
-    e.target.value = '';
+    reader.readAsText(pendingImport);
+    setPendingImport(null);
   };
 
   if (isLoading) return <div className="p-8">Loading settings...</div>;
@@ -116,38 +114,6 @@ export default function SettingsPage() {
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
         <p className="text-muted-foreground mt-1">Manage business identity, roles, and data backups.</p>
       </div>
-
-      <Card className="border-border/50 shadow-sm border-l-4 border-l-primary">
-        <CardHeader className="bg-muted/10 pb-4">
-          <CardTitle className="text-xl">Active Role Context</CardTitle>
-          <CardDescription>
-            Switching to Attendant hides sensitive data like profit margins and cost prices across the entire app.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between p-4 border border-border/50 rounded-xl bg-background shadow-sm">
-            <div className="space-y-0.5">
-              <Label className="text-base">Operating Mode</Label>
-              <p className="text-sm text-muted-foreground">
-                Currently running as <strong className="text-foreground capitalize">{settings?.activeRole}</strong>
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className={`text-sm font-medium ${settings?.activeRole === 'attendant' ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {settings?.attendantLabel || 'Attendant'}
-              </span>
-              <Switch
-                checked={settings?.activeRole === 'owner'}
-                onCheckedChange={handleRoleToggle}
-                className="data-[state=checked]:bg-primary"
-              />
-              <span className={`text-sm font-medium ${settings?.activeRole === 'owner' ? 'text-primary' : 'text-muted-foreground'}`}>
-                {settings?.ownerLabel || 'Owner'}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card className="border-border/50 shadow-sm">
@@ -162,22 +128,6 @@ export default function SettingsPage() {
                 value={formData.shopName}
                 onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
               />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Owner Label</Label>
-                <Input
-                  value={formData.ownerLabel}
-                  onChange={(e) => setFormData({ ...formData, ownerLabel: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Attendant Label</Label>
-                <Input
-                  value={formData.attendantLabel}
-                  onChange={(e) => setFormData({ ...formData, attendantLabel: e.target.value })}
-                />
-              </div>
             </div>
             <Separator className="my-4" />
             <div className="space-y-2">
@@ -225,7 +175,7 @@ export default function SettingsPage() {
                 accept=".json,application/json"
                 className="hidden"
                 ref={fileInputRef}
-                onChange={handleImport}
+                onChange={handleImportFile}
               />
               <Button
                 variant="destructive"
@@ -235,6 +185,23 @@ export default function SettingsPage() {
               >
                 <Upload className="w-4 h-4 mr-2" /> Restore from File
               </Button>
+
+              <AlertDialog open={!!pendingImport} onOpenChange={(open) => { if (!open) setPendingImport(null); }}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Restore Backup?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will <strong>completely overwrite</strong> all current products, sales, expenses, and customer data with the backup contents. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={confirmImport} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Yes, Restore
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </CardContent>
         </Card>

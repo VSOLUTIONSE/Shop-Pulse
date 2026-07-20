@@ -62,7 +62,7 @@ export default defineSchema({
   sales: defineTable({
     id: v.number(),
     sessionId: v.optional(v.number()),
-    operatorRole: v.union(v.literal("owner"), v.literal("attendant")),
+    operatorRole: v.union(v.literal("owner"), v.literal("staff")),
     status: v.union(v.literal("completed"), v.literal("voided")),
     items: v.array(v.object({
       productId: v.number(),

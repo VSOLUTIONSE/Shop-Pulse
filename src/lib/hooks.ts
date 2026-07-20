@@ -23,7 +23,7 @@ export function useGetSettings() {
 export function useUpdateSettings() {
   const mutate = useMutation(api.settings.update);
   return {
-    mutate: (d: { shopName?: string; ownerLabel?: string; attendantLabel?: string; activeRole?: 'owner' | 'attendant'; lowStockThreshold?: number }) => mutate(d),
+    mutate: (d: { shopName?: string; lowStockThreshold?: number }) => mutate(d),
     isPending: false,
   };
 }
