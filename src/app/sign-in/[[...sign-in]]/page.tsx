@@ -15,12 +15,13 @@ export default function SignInPage() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const isLoaded = fetchStatus !== 'fetching';
   const fieldError = errors.fields;
 
   const needsVerify =
-    signIn?.status === 'needs_client_trust' || signIn?.status === 'needs_second_factor';
+    submitted && (signIn?.status === 'needs_client_trust' || signIn?.status === 'needs_second_factor');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,6 +36,8 @@ export default function SignInPage() {
       setLoading(false);
       return;
     }
+
+    setSubmitted(true);
 
     if (signIn.status === 'complete') {
       await signIn.finalize({
