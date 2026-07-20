@@ -25,7 +25,10 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const { error: pwdError } = await signIn.password({ identifier: email, password });
+      const { error: createError } = await signIn.create({ identifier: email });
+      if (createError) throw createError;
+
+      const { error: pwdError } = await signIn.password({ password });
       if (pwdError) throw pwdError;
 
       const { error: finalizeError } = await signIn.finalize();
