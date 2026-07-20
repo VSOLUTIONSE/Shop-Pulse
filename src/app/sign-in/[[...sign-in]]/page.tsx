@@ -3,6 +3,7 @@
 import { useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import Link from 'next/link';
 import { Store, Loader2 } from 'lucide-react';
 
 export default function SignInPage() {
@@ -111,6 +112,13 @@ export default function SignInPage() {
                   'Sign In'
                 )}
               </button>
+
+                <p className="text-center text-sm text-muted-foreground">
+                  Don't have an account?{' '}
+                  <Link href="/sign-up" className="text-primary font-medium hover:underline">
+                    Create one
+                  </Link>
+                </p>
             </form>
           </div>
         </div>
