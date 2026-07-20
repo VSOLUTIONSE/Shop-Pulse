@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Store, Loader2, Eye, EyeOff } from 'lucide-react';
 
 export default function SignInPage() {
-  const { signIn, fetchStatus } = useSignIn();
+  const { signIn, errors, fetchStatus } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,6 +16,7 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false);
 
   const isLoaded = fetchStatus !== 'fetching';
+  const fieldError = errors.fields;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,24 +25,27 @@ export default function SignInPage() {
     setError('');
     setLoading(true);
 
-    try {
-      const { error: createError } = await signIn.create({ identifier: email });
-      if (createError) throw createError;
+    const { error: pwdError } = await signIn.password({ emailAddress: email, password });
+    if (pwdError) {
+      setError(pwdError.message);
+      setLoading(false);
+      return;
+    }
 
-      const { error: pwdError } = await signIn.password({ password });
-      if (pwdError) throw pwdError;
-
-      const { error: finalizeError } = await signIn.finalize();
-      if (finalizeError) throw finalizeError;
-      router.push('/');
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message
-          : typeof err === 'object' && err !== null && 'message' in err
-            ? (err as { message: string }).message
-            : 'Invalid email or password.';
-      setError(message);
-    } finally {
+    if (signIn.status === 'complete') {
+      await signIn.finalize({
+        navigate: ({ session, decorateUrl }) => {
+          if (session?.currentTask) return;
+          const url = decorateUrl('/');
+          if (url.startsWith('http')) {
+            window.location.href = url;
+          } else {
+            router.push(url);
+          }
+        },
+      });
+    } else {
+      setError('Unable to sign in. Please check your credentials.');
       setLoading(false);
     }
   }
@@ -78,6 +82,9 @@ export default function SignInPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full h-10 px-3 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                 />
+                {fieldError.identifier && (
+                  <p className="text-xs text-destructive">{fieldError.identifier.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -104,6 +111,9 @@ export default function SignInPage() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {fieldError.password && (
+                  <p className="text-xs text-destructive">{fieldError.password.message}</p>
+                )}
               </div>
 
               {error && (
