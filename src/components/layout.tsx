@@ -28,6 +28,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { UserButton } from '@clerk/nextjs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -80,14 +81,22 @@ function SidebarNav() {
       </SidebarContent>
       <SidebarFooter className="border-t border-border/50 p-4">
         <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
-            {isLoaded ? (isOwner ? 'O' : 'S') : '?'}
-          </div>
-          <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
+          <UserButton
+            appearance={{
+              elements: {
+                userButtonAvatarBox: 'h-8 w-8 shrink-0',
+                userButtonOuterIdentifier: 'text-sm font-semibold truncate text-foreground',
+                userButtonTrigger: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md',
+              },
+            }}
+            userProfileMode="navigation"
+            userProfileUrl="/user-profile"
+          />
+          <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden leading-tight">
             <span className="text-sm font-semibold truncate capitalize">
-              {isLoaded ? (isOwner ? 'Owner' : 'Staff') : '...'}
+              {isOwner ? 'Owner' : 'Staff'}
             </span>
-            <span className="text-xs text-muted-foreground truncate">Signed In</span>
+            <span className="text-xs text-muted-foreground truncate">{isOwner ? 'Full Access' : 'Limited Access'}</span>
           </div>
         </div>
       </SidebarFooter>
