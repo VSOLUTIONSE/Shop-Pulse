@@ -121,7 +121,7 @@ export default function Customers() {
                   )}
                 </div>
                 <div className="flex flex-col items-end shrink-0">
-                  <span className={`font-mono font-bold ${customer.balanceCents > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-muted-foreground'}`}>
+                  <span className={`font-num font-bold ${customer.balanceCents > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-muted-foreground'}`}>
                     {formatMoney(customer.balanceCents)}
                   </span>
                   <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Balance</span>
@@ -155,7 +155,7 @@ export default function Customers() {
               </div>
               <div className="flex flex-col items-end">
                 <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Current Debt</span>
-                <span className={`text-4xl font-mono font-black tracking-tighter ${customerDetail.balanceCents > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-primary'}`}>
+                <span className={`text-4xl font-num font-black tracking-tighter ${customerDetail.balanceCents > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-primary'}`}>
                   {formatMoney(customerDetail.balanceCents)}
                 </span>
                 {customerDetail.balanceCents > 0 && (
@@ -192,7 +192,7 @@ export default function Customers() {
                           <Badge variant={entry.type === 'charge' ? 'outline' : 'secondary'} className={entry.type === 'charge' ? 'text-orange-600 border-orange-200 bg-orange-50' : 'bg-green-100 text-green-800'}>
                             {entry.type === 'charge' ? 'Credit Purchase' : 'Payment Received'}
                           </Badge>
-                          <span className={`font-mono font-bold text-lg ${entry.type === 'charge' ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-500'}`}>
+                          <span className={`font-num font-bold text-lg ${entry.type === 'charge' ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-500'}`}>
                             {entry.type === 'charge' ? '+' : '-'}{formatMoney(entry.amountCents)}
                           </span>
                         </div>
@@ -243,7 +243,7 @@ export default function Customers() {
           <div className="py-4 space-y-4">
             <div className="bg-orange-50 dark:bg-orange-950/20 text-orange-800 dark:text-orange-300 p-3 rounded-lg flex justify-between items-center border border-orange-200 dark:border-orange-900/50">
               <span className="font-semibold text-sm uppercase tracking-wider">Outstanding Balance</span>
-              <span className="font-mono font-bold text-xl">{formatMoney(customerDetail?.balanceCents)}</span>
+              <span className="font-num font-bold text-xl">{formatMoney(customerDetail?.balanceCents)}</span>
             </div>
             <div className="grid gap-2">
               <Label>Payment Amount ($)</Label>

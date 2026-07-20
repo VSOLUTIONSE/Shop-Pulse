@@ -182,7 +182,7 @@ export default function Expenses() {
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium">{exp.description}</TableCell>
-                      <TableCell className="text-right font-mono font-bold text-destructive">
+                      <TableCell className="text-right font-num font-bold text-destructive">
                         {formatMoney(exp.amountCents)}
                       </TableCell>
                       <TableCell>
@@ -202,7 +202,7 @@ export default function Expenses() {
           <Card className="border-border/50 shadow-sm bg-gradient-to-br from-card to-destructive/5">
             <CardContent className="p-6">
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Total Logged</h3>
-              <div className="text-4xl font-mono font-black text-destructive tracking-tighter">
+              <div className="text-4xl font-num font-black text-destructive tracking-tighter">
                 {formatMoney(totalExpenses)}
               </div>
               <p className="text-sm text-muted-foreground mt-2 border-t border-border/50 pt-2">

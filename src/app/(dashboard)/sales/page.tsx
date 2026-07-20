@@ -157,7 +157,7 @@ export default function Sales() {
                         ))}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-mono font-bold">
+                    <TableCell className="text-right font-num font-bold">
                       {formatMoney(sale.totalCents)}
                     </TableCell>
                     <TableCell className="text-center">

@@ -111,7 +111,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-mono tracking-tight">{formatMoney(todaySession?.totalSalesCents ?? 0)}</div>
+            <div className="text-3xl font-bold font-num tracking-tight">{formatMoney(todaySession?.totalSalesCents ?? 0)}</div>
             <p className="text-xs text-muted-foreground mt-1">{todaySession?.saleCount ?? 0} transaction{todaySession?.saleCount !== 1 ? 's' : ''}</p>
           </CardContent>
         </Card>
@@ -125,7 +125,7 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-mono tracking-tight text-green-700 dark:text-green-400">
+              <div className="text-3xl font-bold font-num tracking-tight text-green-700 dark:text-green-400">
                 {formatMoney(todaySession?.totalProfitCents ?? 0)}
               </div>
             </CardContent>
@@ -140,7 +140,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-mono tracking-tight">{formatMoney(summary?.totalDebtCents)}</div>
+            <div className="text-3xl font-bold font-num tracking-tight">{formatMoney(summary?.totalDebtCents)}</div>
             <p className="text-xs text-muted-foreground mt-1">Across {summary?.activeDebtAccounts} accounts</p>
           </CardContent>
         </Card>
@@ -153,7 +153,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-mono tracking-tight">{formatMoney(summary?.monthlyExpensesCents)}</div>
+            <div className="text-3xl font-bold font-num tracking-tight">{formatMoney(summary?.monthlyExpensesCents)}</div>
           </CardContent>
         </Card>
       </div>
@@ -275,7 +275,7 @@ export default function Dashboard() {
                         <span className="text-xs text-muted-foreground">{formatShortDate(sale.createdAt)}</span>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="font-semibold text-sm font-mono">{formatMoney(sale.totalCents)}</span>
+                        <span className="font-semibold text-sm font-num">{formatMoney(sale.totalCents)}</span>
                         {sale.status === 'voided' ? (
                           <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-destructive/10 text-destructive border-transparent">Voided</Badge>
                         ) : (

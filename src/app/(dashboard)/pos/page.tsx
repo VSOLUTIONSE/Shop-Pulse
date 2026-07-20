@@ -187,11 +187,11 @@ export default function POS() {
           <div className="flex items-center gap-2 min-w-0 flex-shrink">
             <div className="text-right">
               <p className="text-xs text-muted-foreground">Revenue</p>
-              <p className="font-mono font-bold text-xs sm:text-sm">{formatMoney(todaySession?.totalSalesCents ?? 0)}</p>
+              <p className="font-num font-bold text-xs sm:text-sm">{formatMoney(todaySession?.totalSalesCents ?? 0)}</p>
             </div>
             <div className="text-right">
               <p className="text-xs text-muted-foreground">Profit</p>
-              <p className={`font-mono font-bold text-xs sm:text-sm ${(todaySession?.totalProfitCents ?? 0) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+              <p className={`font-num font-bold text-xs sm:text-sm ${(todaySession?.totalProfitCents ?? 0) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
                 {formatMoney(todaySession?.totalProfitCents ?? 0)}
               </p>
             </div>
@@ -278,7 +278,7 @@ export default function POS() {
                       >
                         <td className="py-2.5 px-3 font-medium truncate max-w-[200px]">{product.name}</td>
                         <td className="py-2.5 px-3 text-muted-foreground hidden sm:table-cell">{product.categoryName}</td>
-                        <td className="py-2.5 px-3 text-right font-mono font-semibold">{formatMoney(product.sellingPriceCents)}</td>
+                        <td className="py-2.5 px-3 text-right font-num font-semibold">{formatMoney(product.sellingPriceCents)}</td>
                         <td className="py-2.5 px-3 text-right">
                           {product.stockLevel <= 0 ? (
                             <span className="text-destructive text-xs font-medium">Out of Stock</span>
@@ -369,7 +369,7 @@ export default function POS() {
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
-                      <span className="font-mono font-bold text-sm">
+                      <span className="font-num font-bold text-sm">
                         {formatMoney(item.unitPriceCents * item.quantity)}
                       </span>
                     </div>
@@ -383,7 +383,7 @@ export default function POS() {
         <div className="shrink-0 border-t border-border/50 p-4 space-y-2 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span className="font-mono">{formatMoney(subtotal)}</span>
+            <span className="font-num">{formatMoney(subtotal)}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Discount</span>
@@ -406,7 +406,7 @@ export default function POS() {
           <Separator className="my-2" />
           <div className="flex justify-between font-bold text-lg md:text-xl">
             <span>Total</span>
-            <span className="font-mono text-primary">{formatMoney(total)}</span>
+            <span className="font-num text-primary">{formatMoney(total)}</span>
           </div>
           <Button
             className="w-full h-11 md:h-14 text-base md:text-lg font-bold"
@@ -430,7 +430,7 @@ export default function POS() {
 
           <div className="py-6 space-y-6">
             <div className="flex justify-center mb-6">
-              <div className="text-4xl font-black font-mono tracking-tighter text-primary">
+              <div className="text-4xl font-black font-num tracking-tighter text-primary">
                 {formatMoney(total)}
               </div>
             </div>

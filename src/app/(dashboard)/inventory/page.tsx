@@ -230,11 +230,11 @@ export default function Inventory() {
                   <TableCell>
                     <Badge variant="secondary" className="font-normal">{product.categoryName}</Badge>
                   </TableCell>
-                  <TableCell className="text-right font-mono font-medium text-primary">
+                  <TableCell className="text-right font-num font-medium text-primary">
                     {formatMoney(product.sellingPriceCents)}
                   </TableCell>
                   {isOwner && (
-                    <TableCell className="text-right font-mono text-muted-foreground">
+                    <TableCell className="text-right font-num text-muted-foreground">
                       {formatMoney(product.costPriceCents)}
                     </TableCell>
                   )}
