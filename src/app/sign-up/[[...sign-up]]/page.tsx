@@ -180,6 +180,8 @@ export default function SignUpPage() {
                   </div>
                 )}
 
+                <div id="clerk-captcha"></div>
+
                 <button
                   type="submit"
                   disabled={loading || !isLoaded}
@@ -270,8 +272,6 @@ export default function SignUpPage() {
                   'Verify Email'
                 )}
               </button>
-
-              <div id="clerk-captcha"></div>
 
               <button
                 type="button"

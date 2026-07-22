@@ -169,53 +169,57 @@ export default function POS() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col gap-4 overflow-hidden">
-      <div className="shrink-0 flex items-center justify-between gap-4 p-4 bg-card border border-border/50 rounded-xl shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className={`w-3 h-3 rounded-full ${sessionLoading ? 'bg-muted animate-pulse' : isOpen ? 'bg-green-500' : 'bg-red-500'}`} />
-          <div>
-            <p className="text-sm font-semibold">
+    <div className=" flex flex-col gap-4 overflow-hidden">
+      <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-card border border-border/50 rounded-xl shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold truncate">
               {sessionLoading ? 'Loading...' : isOpen ? 'Sales Open' : 'Sales Closed'}
             </p>
-            <p className="text-xs text-muted-foreground">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+            <p className="text-xs text-muted-foreground truncate">
+              {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
             </p>
           </div>
+          <div className={`w-3 h-3 rounded-full shrink-0 ${sessionLoading ? 'bg-muted animate-pulse' : isOpen ? 'bg-green-500' : 'bg-red-500'}`} />
         </div>
 
         {!sessionLoading && (
-          <div className="flex items-center gap-2 min-w-0 flex-shrink">
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground">Revenue</p>
-              <p className="font-num font-bold text-xs sm:text-sm">{formatMoney(todaySession?.totalSalesCents ?? 0)}</p>
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+            <div className="order-1 sm:order-2 w-full sm:w-auto">
+              {isOpen ? (
+                <Button variant="outline" size="sm" onClick={() => closeSession.mutate()} disabled={closeSession.isPending} className="h-8 text-xs px-3 w-full sm:w-auto sm:h-9 sm:text-sm sm:px-4">
+                  <Square className="w-3.5 h-3.5 mr-1 sm:w-4 sm:h-4 sm:mr-1.5 text-red-500" />
+                  Close Sales
+                </Button>
+              ) : (
+                <Button size="sm" onClick={() => openSession.mutate()} disabled={openSession.isPending} className="h-8 text-xs px-3 w-full sm:w-auto sm:h-9 sm:text-sm sm:px-4">
+                  <Play className="w-3.5 h-3.5 mr-1 sm:w-4 sm:h-4 sm:mr-1.5" />
+                  Open Sales
+                </Button>
+              )}
             </div>
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground">Profit</p>
-              <p className={`font-num font-bold text-xs sm:text-sm ${(todaySession?.totalProfitCents ?? 0) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
-                {formatMoney(todaySession?.totalProfitCents ?? 0)}
-              </p>
+            <div className="flex items-center gap-3 order-2 sm:order-1">
+              <div className="text-right">
+                <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">Revenue</p>
+                <p className="font-num font-bold text-xs sm:text-sm">{formatMoney(todaySession?.totalSalesCents ?? 0)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">Profit</p>
+                <p className={`font-num font-bold text-xs sm:text-sm ${(todaySession?.totalProfitCents ?? 0) >= 0 ? 'text-green-600' : 'text-destructive'}`}>
+                  {formatMoney(todaySession?.totalProfitCents ?? 0)}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">Txns</p>
+                <p className="font-mono font-bold text-xs sm:text-sm">{todaySession?.saleCount ?? 0}</p>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground">Txns</p>
-              <p className="font-mono font-bold text-xs sm:text-sm">{todaySession?.saleCount ?? 0}</p>
-            </div>
-            {isOpen ? (
-              <Button variant="outline" size="sm" onClick={() => closeSession.mutate()} disabled={closeSession.isPending}>
-                <Square className="w-4 h-4 mr-1.5 text-red-500" />
-                Close Sales
-              </Button>
-            ) : (
-              <Button size="sm" onClick={() => openSession.mutate()} disabled={openSession.isPending}>
-                <Play className="w-4 h-4 mr-1.5" />
-                Open Sales
-              </Button>
-            )}
           </div>
         )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 flex-1 min-h-0">
-      <div className="max-md:h-[55%] max-md:flex-none flex-1 flex flex-col min-h-0 min-w-0 bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
         <div className="p-4 border-b border-border/50 bg-muted/20 shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -228,25 +232,31 @@ export default function POS() {
           </div>
         </div>
 
-        <ScrollArea className="flex-1">
-          <div className="p-4">
+        <div className="flex-1 overflow-auto scrollbar-thin">
+          <div className="min-w-[500px] md:min-w-[600px] p-2 md:p-4">
             {productsLoading ? (
-              <table className="w-full text-sm">
+              <table className="w-full text-sm table-fixed">
+                <colgroup>
+                  <col className="w-auto" />
+                  <col className="w-[80px] hidden sm:table-column" />
+                  <col className="w-[90px]" />
+                  <col className="w-[70px]" />
+                </colgroup>
                 <thead>
                   <tr className="text-xs text-muted-foreground border-b border-border/50">
-                    <th className="text-left font-medium py-2 px-3">Item</th>
-                    <th className="text-left font-medium py-2 px-3 hidden sm:table-cell">Category</th>
-                    <th className="text-right font-medium py-2 px-3">Price</th>
-                    <th className="text-right font-medium py-2 px-3">Stock</th>
+                    <th className="text-left font-medium py-1.5 md:py-2 px-[2px] md:px-3">Item</th>
+                    <th className="text-left font-medium py-1.5 md:py-2 px-[2px] md:px-3 hidden sm:table-cell">Category</th>
+                    <th className="text-right font-medium py-1.5 md:py-2 px-[2px] md:px-3">Price</th>
+                    <th className="text-right font-medium py-1.5 md:py-2 px-[2px] md:px-3">Stock</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[1, 2, 3, 4, 5, 6].map(i => (
                     <tr key={i} className="border-b border-border/25">
-                      <td className="py-2.5 px-3"><div className="h-4 bg-muted animate-pulse rounded w-32" /></td>
-                      <td className="py-2.5 px-3 hidden sm:table-cell"><div className="h-4 bg-muted animate-pulse rounded w-20" /></td>
-                      <td className="py-2.5 px-3 text-right"><div className="h-4 bg-muted animate-pulse rounded w-16 ml-auto" /></td>
-                      <td className="py-2.5 px-3 text-right"><div className="h-4 bg-muted animate-pulse rounded w-10 ml-auto" /></td>
+                      <td className="py-1.5 md:py-2.5 px-[2px] md:px-3"><div className="h-4 bg-muted animate-pulse rounded w-24 md:w-32" /></td>
+                      <td className="py-1.5 md:py-2.5 px-[2px] md:px-3 hidden sm:table-cell"><div className="h-4 bg-muted animate-pulse rounded w-16 md:w-20" /></td>
+                      <td className="py-1.5 md:py-2.5 px-[2px] md:px-3 text-right"><div className="h-4 bg-muted animate-pulse rounded w-12 md:w-16 ml-auto" /></td>
+                      <td className="py-1.5 md:py-2.5 px-[2px] md:px-3 text-right"><div className="h-4 bg-muted animate-pulse rounded w-8 md:w-10 ml-auto" /></td>
                     </tr>
                   ))}
                 </tbody>
@@ -258,13 +268,19 @@ export default function POS() {
               </div>
             ) : (
               <>
-                <table className="w-full text-sm">
+                <table className="w-full text-sm table-fixed">
+                  <colgroup>
+                    <col className="w-auto" />
+                    <col className="w-[80px] hidden sm:table-column" />
+                    <col className="w-[90px]" />
+                    <col className="w-[70px]" />
+                  </colgroup>
                   <thead>
                     <tr className="text-xs text-muted-foreground border-b border-border/50">
-                      <th className="text-left font-medium py-2 px-3">Item</th>
-                      <th className="text-left font-medium py-2 px-3 hidden sm:table-cell">Category</th>
-                      <th className="text-right font-medium py-2 px-3">Price</th>
-                      <th className="text-right font-medium py-2 px-3">Stock</th>
+                      <th className="text-left font-medium py-1.5 md:py-2 px-[2px] md:px-3">Item</th>
+                      <th className="text-left font-medium py-1.5 md:py-2 px-[2px] md:px-3 hidden sm:table-cell">Category</th>
+                      <th className="text-right font-medium py-1.5 md:py-2 px-[2px] md:px-3">Price</th>
+                      <th className="text-right font-medium py-1.5 md:py-2 px-[2px] md:px-3">Stock</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -276,10 +292,10 @@ export default function POS() {
                           product.stockLevel <= 0 ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
                       >
-                        <td className="py-2.5 px-3 font-medium truncate max-w-[200px]">{product.name}</td>
-                        <td className="py-2.5 px-3 text-muted-foreground hidden sm:table-cell">{product.categoryName}</td>
-                        <td className="py-2.5 px-3 text-right font-num font-semibold">{formatMoney(product.sellingPriceCents)}</td>
-                        <td className="py-2.5 px-3 text-right">
+                        <td className="py-1.5 md:py-2.5 px-[2px] md:px-3 font-medium truncate max-w-[120px] md:max-w-[200px]" title={product.name}>{product.name}</td>
+                        <td className="py-1.5 md:py-2.5 px-[2px] md:px-3 text-muted-foreground truncate max-w-[100px] hidden sm:table-cell" title={product.categoryName}>{product.categoryName}</td>
+                        <td className="py-1.5 md:py-2.5 px-[2px] md:px-3 text-right font-num font-semibold whitespace-nowrap">{formatMoney(product.sellingPriceCents)}</td>
+                        <td className="py-1.5 md:py-2.5 px-[2px] md:px-3 text-right whitespace-nowrap">
                           {product.stockLevel <= 0 ? (
                             <span className="text-destructive text-xs font-medium">Out of Stock</span>
                           ) : product.isLowStock ? (
@@ -322,18 +338,18 @@ export default function POS() {
               </>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
-      <div className="w-full md:w-[380px] lg:w-[420px] flex flex-col bg-card border border-border/50 rounded-xl shadow-sm shrink-0 max-md:flex-1 max-md:min-h-0 overflow-hidden">
-        <div className="p-4 border-b border-border/50 bg-primary text-primary-foreground rounded-t-xl">
+      <div className="w-full md:w-[380px] lg:w-[420px] flex flex-col bg-card border border-border/50 rounded-xl shadow-sm shrink-0 overflow-hidden">
+        <div className="p-4 border-b border-border/50 bg-primary text-primary-foreground rounded-t-xl shrink-0">
           <div className="flex items-center gap-2 font-semibold">
             <ShoppingCart className="w-5 h-5" />
             Current Sale
           </div>
         </div>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="p-4">
             {cart.length === 0 ? (
               <div className="flex items-center justify-center text-muted-foreground min-h-[200px]">
@@ -380,7 +396,7 @@ export default function POS() {
           </div>
         </ScrollArea>
 
-        <div className="shrink-0 border-t border-border/50 p-4 space-y-2 text-sm">
+        <div className="shrink-0 border-t border-border/50 p-4 space-y-2 text-sm bg-card">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
             <span className="font-num">{formatMoney(subtotal)}</span>
