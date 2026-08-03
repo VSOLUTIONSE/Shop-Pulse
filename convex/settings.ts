@@ -42,6 +42,9 @@ export const update = mutation({
         attendantLabel: args.attendantLabel ?? "Attendant",
         activeRole: args.activeRole ?? "owner",
         lowStockThreshold: args.lowStockThreshold ?? 5,
+        phone: args.phone ?? undefined,
+        address: args.address ?? undefined,
+        tinVat: args.tinVat ?? undefined,
       });
     }
   },
