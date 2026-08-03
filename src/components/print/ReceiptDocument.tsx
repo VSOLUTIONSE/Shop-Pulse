@@ -77,7 +77,7 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Cashier:</span>
-            <span className="capitalize">{data.operatorRole}</span>
+            <span style={{ textTransform: 'capitalize' }}>{data.operatorRole}</span>
           </div>
           {data.customerName && (
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -124,7 +124,7 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
         <div style={{ borderTop: '1px dashed #000', margin: '2mm 0', paddingTop: '1mm' }}>
           {data.payments.map((p, idx) => (
             <div key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span className="capitalize">{p.method}</span>
+              <span style={{ textTransform: 'capitalize' }}>{p.method}</span>
               <span>{fmt(p.amountCents)}</span>
             </div>
           ))}
