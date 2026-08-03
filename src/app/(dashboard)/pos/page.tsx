@@ -43,6 +43,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import type { SaleInput } from '@/types';
+import PrintPreviewDialog from '@/components/print/PrintPreviewDialog';
+import { cartToPrintData, shopFromSettings } from '@/components/print/print-data';
+import type { PrintData } from '@/components/print/print-data';
 
 interface CartItem {
   productId: number;
@@ -65,6 +68,7 @@ export default function POS() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+  const [lastSale, setLastSale] = useState<{ data: PrintData } | null>(null);
 
   const { data: products, isLoading: productsLoading } = useListProducts();
   const { data: customers } = useListCustomers();
@@ -158,8 +162,24 @@ export default function POS() {
       sessionId: todaySession?.id,
     };
 
-    createSale.mutate(payload).then(() => {
+    createSale.mutate(payload).then((res) => {
       toast({ title: 'Sale completed successfully!' });
+      const customerName =
+        paymentMethod === 'credit'
+          ? customers?.find(c => c.id === selectedCustomerId)?.name
+          : undefined;
+      setLastSale({
+        data: cartToPrintData({
+          saleId: res.id,
+          items: cart,
+          discountCents,
+          totalCents: total,
+          paymentMethod,
+          customerName,
+          operatorRole: settings?.activeRole === 'attendant' ? 'staff' : 'owner',
+          shop: shopFromSettings(settings ?? { shopName: 'SalesPulse' }),
+        }),
+      });
       setCart([]);
       setDiscountCents(0);
       setCheckoutOpen(false);
@@ -516,6 +536,13 @@ export default function POS() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <PrintPreviewDialog
+        open={!!lastSale}
+        onOpenChange={(open) => { if (!open) setLastSale(null); }}
+        documentType="receipt"
+        data={lastSale?.data ?? null}
+        documentTitle={`Receipt-${String(lastSale?.data.saleId ?? 0).padStart(4, '0')}`}
+      />
     </div>
     </div>
   );

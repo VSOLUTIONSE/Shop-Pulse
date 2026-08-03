@@ -8,6 +8,9 @@ export default defineSchema({
     attendantLabel: v.string(),
     activeRole: v.union(v.literal("owner"), v.literal("attendant")),
     lowStockThreshold: v.number(),
+    phone: v.optional(v.string()),
+    address: v.optional(v.string()),
+    tinVat: v.optional(v.string()),
   }),
 
   categories: defineTable({

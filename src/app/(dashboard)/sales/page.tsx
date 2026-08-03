@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   useListSales,
   useVoidSale,
+  useGetSale,
+  useGetSettings,
 } from '@/lib/hooks';
 import { formatMoney, formatDate, useDebouncedValue } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -22,6 +24,8 @@ import {
   Search,
   Ban,
   Receipt,
+  Printer,
+  FileText,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -34,6 +38,36 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import type { SaleStatus, PaymentMethod } from '@/types';
+import PrintPreviewDialog from '@/components/print/PrintPreviewDialog';
+import { saleToPrintData, shopFromSettings } from '@/components/print/print-data';
+
+function SalePrintDialog({
+  type,
+  saleId,
+  onClose,
+}: {
+  type: 'receipt' | 'invoice';
+  saleId: number;
+  onClose: () => void;
+}) {
+  const { data: sale } = useGetSale(saleId);
+  const { data: settings } = useGetSettings();
+
+  const data = useMemo(() => {
+    if (!sale) return null;
+    return saleToPrintData(sale, shopFromSettings(settings ?? {}));
+  }, [sale, settings]);
+
+  return (
+    <PrintPreviewDialog
+      open
+      onOpenChange={(open) => { if (!open) onClose(); }}
+      documentType={type}
+      data={data}
+      documentTitle={`${type === 'receipt' ? 'Receipt' : 'Invoice'}-${String(saleId).padStart(4, '0')}`}
+    />
+  );
+}
 
 export default function Sales() {
   const [search, setSearch] = useState('');
@@ -43,6 +77,7 @@ export default function Sales() {
 
   const [voidSaleId, setVoidSaleId] = useState<number | null>(null);
   const [voidReason, setVoidReason] = useState('');
+  const [printTarget, setPrintTarget] = useState<{ type: 'receipt' | 'invoice'; saleId: number } | null>(null);
 
   const { data: sales, isLoading } = useListSales({
     search: debouncedSearch || undefined,
@@ -169,14 +204,32 @@ export default function Sales() {
                     </TableCell>
                     <TableCell className="text-right">
                       {sale.status === 'completed' && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setVoidSaleId(sale.id)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
-                        >
-                          <Ban className="w-4 h-4 mr-1" /> Void
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setPrintTarget({ type: 'receipt', saleId: sale.id })}
+                            className="h-8 px-2"
+                          >
+                            <Printer className="w-4 h-4 mr-1" /> Receipt
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setPrintTarget({ type: 'invoice', saleId: sale.id })}
+                            className="h-8 px-2"
+                          >
+                            <FileText className="w-4 h-4 mr-1" /> Invoice
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setVoidSaleId(sale.id)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
+                          >
+                            <Ban className="w-4 h-4 mr-1" /> Void
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>
@@ -218,6 +271,14 @@ export default function Sales() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {printTarget && (
+        <SalePrintDialog
+          type={printTarget.type}
+          saleId={printTarget.saleId}
+          onClose={() => setPrintTarget(null)}
+        />
+      )}
     </div>
   );
 }

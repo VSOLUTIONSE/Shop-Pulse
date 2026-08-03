@@ -39,6 +39,9 @@ export default function SettingsPage() {
   const [formData, setFormData] = useState({
     shopName: '',
     lowStockThreshold: '',
+    phone: '',
+    address: '',
+    tinVat: '',
   });
 
   useEffect(() => {
@@ -46,6 +49,9 @@ export default function SettingsPage() {
       setFormData({
         shopName: settings.shopName,
         lowStockThreshold: settings.lowStockThreshold.toString(),
+        phone: settings.phone ?? '',
+        address: settings.address ?? '',
+        tinVat: settings.tinVat ?? '',
       });
     }
   }, [settings]);
@@ -54,6 +60,9 @@ export default function SettingsPage() {
     updateSettings.mutate({
       shopName: formData.shopName,
       lowStockThreshold: Number(formData.lowStockThreshold),
+      phone: formData.phone,
+      address: formData.address,
+      tinVat: formData.tinVat,
     }).then(() => {
       toast({ title: "Settings saved successfully" });
     });
@@ -138,6 +147,30 @@ export default function SettingsPage() {
                 onChange={(e) => setFormData({ ...formData, lowStockThreshold: e.target.value })}
               />
               <p className="text-xs text-muted-foreground">Global threshold used when creating products.</p>
+            </div>
+            <Separator className="my-4" />
+            <div className="space-y-2">
+              <Label>Business Phone</Label>
+              <Input
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
+              <p className="text-xs text-muted-foreground">Shown on receipts and invoices.</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Business Address</Label>
+              <Input
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>TIN / VAT Number</Label>
+              <Input
+                value={formData.tinVat}
+                onChange={(e) => setFormData({ ...formData, tinVat: e.target.value })}
+              />
+              <p className="text-xs text-muted-foreground">Tax identification / VAT registration number.</p>
             </div>
 
             <Button onClick={handleSaveSettings} disabled={updateSettings.isPending} className="w-full mt-2">

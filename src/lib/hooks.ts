@@ -23,7 +23,13 @@ export function useGetSettings() {
 export function useUpdateSettings() {
   const mutate = useMutation(api.settings.update);
   return {
-    mutate: (d: { shopName?: string; lowStockThreshold?: number }) => mutate(d),
+    mutate: (d: {
+      shopName?: string;
+      lowStockThreshold?: number;
+      phone?: string;
+      address?: string;
+      tinVat?: string;
+    }) => mutate(d),
     isPending: false,
   };
 }

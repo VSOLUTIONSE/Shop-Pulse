@@ -23,6 +23,9 @@ export interface Settings {
   attendantLabel: string;
   activeRole: Role;
   lowStockThreshold: number;
+  phone: string | null;
+  address: string | null;
+  tinVat: string | null;
 }
 
 export interface SettingsUpdate {
@@ -31,6 +34,9 @@ export interface SettingsUpdate {
   attendantLabel?: string;
   activeRole?: Role;
   lowStockThreshold?: number;
+  phone?: string;
+  address?: string;
+  tinVat?: string;
 }
 
 export interface Category {
