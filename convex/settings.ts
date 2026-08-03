@@ -13,6 +13,9 @@ export const get = query({
       attendantLabel: settings.attendantLabel,
       activeRole: settings.activeRole,
       lowStockThreshold: settings.lowStockThreshold,
+      phone: settings.phone ?? null,
+      address: settings.address ?? null,
+      tinVat: settings.tinVat ?? null,
     };
   },
 });
@@ -24,6 +27,9 @@ export const update = mutation({
     attendantLabel: v.optional(v.string()),
     activeRole: v.optional(v.union(v.literal("owner"), v.literal("attendant"))),
     lowStockThreshold: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    address: v.optional(v.string()),
+    tinVat: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("settings").first();
