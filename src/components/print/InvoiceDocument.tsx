@@ -82,7 +82,7 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           </div>
         )}
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8mm', fontSize: '11px' }}>
+        <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', marginTop: '8mm', fontSize: '11px' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid #000', textAlign: 'left' }}>
               <th style={{ padding: '2mm' }}>#</th>
@@ -96,7 +96,7 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
             {data.items.map((item, idx) => (
               <tr key={idx} style={{ borderBottom: '1px solid #999' }}>
                 <td style={{ padding: '2mm' }}>{idx + 1}</td>
-                <td style={{ padding: '2mm' }}>{item.productName}</td>
+                <td style={{ padding: '2mm', wordBreak: 'break-word' }}>{item.productName}</td>
                 <td style={{ padding: '2mm', textAlign: 'center' }}>{item.quantity}</td>
                 <td style={{ padding: '2mm', textAlign: 'right' }}>{fmt(item.unitPriceCents)}</td>
                 <td style={{ padding: '2mm', textAlign: 'right' }}>{fmt(item.lineTotalCents)}</td>
@@ -105,7 +105,7 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           </tbody>
         </table>
 
-        <div style={{ marginLeft: 'auto', width: '70mm', marginTop: '6mm' }}>
+        <div style={{ marginLeft: 'auto', width: '70mm', marginTop: '6mm', breakInside: 'avoid' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1mm 0' }}>
             <span>Subtotal</span>
             <span>{fmt(data.subtotalCents)}</span>
@@ -122,7 +122,7 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           </div>
         </div>
 
-        <div style={{ marginTop: '8mm' }}>
+        <div style={{ marginTop: '8mm', breakInside: 'avoid' }}>
           <div style={{ fontWeight: 700, marginBottom: '1mm' }}>Payment:</div>
           {data.payments.map((p, idx) => (
             <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '120mm' }}>
@@ -134,7 +134,7 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
 
         <div style={{ flex: 1 }} />
 
-        <div style={{ borderTop: '1px solid #999', marginTop: '10mm', paddingTop: '3mm', fontSize: '10px', display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ borderTop: '1px solid #999', marginTop: '10mm', paddingTop: '3mm', fontSize: '10px', display: 'flex', justifyContent: 'space-between', breakInside: 'avoid' }}>
           <span>Thank you for your business.</span>
           <span>Powered by SalesPulse</span>
         </div>
