@@ -24,6 +24,8 @@ import {
   Search,
   Ban,
   Receipt,
+  Printer,
+  FileText,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -36,7 +38,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import type { SaleStatus, PaymentMethod } from '@/types';
-import { Printer, FileText } from 'lucide-react';
 import PrintPreviewDialog from '@/components/print/PrintPreviewDialog';
 import { saleToPrintData, shopFromSettings } from '@/components/print/print-data';
 
@@ -49,12 +50,12 @@ function SalePrintDialog({
   saleId: number;
   onClose: () => void;
 }) {
-  const { data: sale, isLoading } = useGetSale(saleId);
+  const { data: sale } = useGetSale(saleId);
   const { data: settings } = useGetSettings();
 
   const data = useMemo(() => {
-    if (!sale || !settings) return null;
-    return saleToPrintData(sale, shopFromSettings(settings));
+    if (!sale) return null;
+    return saleToPrintData(sale, shopFromSettings(settings ?? {}));
   }, [sale, settings]);
 
   return (
@@ -62,7 +63,7 @@ function SalePrintDialog({
       open
       onOpenChange={(open) => { if (!open) onClose(); }}
       documentType={type}
-      data={isLoading ? null : data}
+      data={data}
       documentTitle={`${type === 'receipt' ? 'Receipt' : 'Invoice'}-${String(saleId).padStart(4, '0')}`}
     />
   );
