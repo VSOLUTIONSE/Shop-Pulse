@@ -1,4 +1,4 @@
-import type { Sale, Settings } from '@/types';
+import type { PaymentMethod, Role, Sale, Settings } from '@/types';
 
 export interface PrintShop {
   name: string;
@@ -15,14 +15,14 @@ export interface PrintItem {
 }
 
 export interface PrintPayment {
-  method: 'cash' | 'transfer' | 'card' | 'credit';
+  method: PaymentMethod;
   amountCents: number;
 }
 
 export interface PrintData {
   saleId: number;
   date: string;
-  operatorRole: 'owner' | 'staff';
+  operatorRole: Role;
   shop: PrintShop;
   items: PrintItem[];
   subtotalCents: number;
@@ -39,7 +39,9 @@ export interface CartPrintItem {
   quantity: number;
 }
 
-export function shopFromSettings(settings: Pick<Settings, 'shopName' | 'phone' | 'address' | 'tinVat'>): PrintShop {
+export function shopFromSettings(
+  settings: Pick<Partial<Settings>, 'shopName' | 'phone' | 'address' | 'tinVat'>
+): PrintShop {
   return {
     name: settings.shopName || 'SalesPulse',
     phone: settings.phone ?? undefined,
@@ -73,26 +75,24 @@ export function cartToPrintData(args: {
   items: CartPrintItem[];
   discountCents: number;
   totalCents: number;
-  paymentMethod: 'cash' | 'transfer' | 'card' | 'credit';
+  paymentMethod: PaymentMethod;
   customerName?: string;
-  operatorRole: 'owner' | 'staff';
+  operatorRole: Role;
   shop: PrintShop;
 }): PrintData {
-  const subtotalCents = args.items.reduce(
-    (acc, i) => acc + i.unitPriceCents * i.quantity,
-    0
-  );
+  const items: PrintItem[] = args.items.map((i) => ({
+    productName: i.name,
+    quantity: i.quantity,
+    unitPriceCents: i.unitPriceCents,
+    lineTotalCents: i.unitPriceCents * i.quantity,
+  }));
+  const subtotalCents = items.reduce((acc, i) => acc + i.lineTotalCents, 0);
   return {
     saleId: args.saleId,
     date: new Date().toISOString(),
     operatorRole: args.operatorRole,
     shop: args.shop,
-    items: args.items.map((i) => ({
-      productName: i.name,
-      quantity: i.quantity,
-      unitPriceCents: i.unitPriceCents,
-      lineTotalCents: i.unitPriceCents * i.quantity,
-    })),
+    items,
     subtotalCents,
     discountCents: args.discountCents,
     totalCents: args.totalCents,
