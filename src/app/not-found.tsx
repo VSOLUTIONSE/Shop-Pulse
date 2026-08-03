@@ -23,3 +23,7 @@ export default function NotFound() {
     </div>
   );
 }
+
+
+// npx convex run --prod convex/seed.ts:seed
+// for the popups use a shadcn style scroll pls, the naitive browser isnt looking good

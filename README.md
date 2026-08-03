@@ -1,6 +1,6 @@
 # SalesPulse
 
-Point of Sale & Inventory Management System for Nigerian retail shops. Built with Next.js, Convex, and Tailwind CSS.
+Point of Sale & Inventory Management System with role-based access for Nigerian retail shops. Built with Next.js, Convex, Clerk, AI SDK and Tailwind CSS.
 
 ## Features
 
@@ -45,3 +45,14 @@ npx convex run seed  # Seed sample data
 - **AI:** Google Gemini via Vercel AI SDK
 - **UI:** Tailwind CSS v4, shadcn/ui components, Lucide icons
 - **Charts:** Recharts
+
+
+
+
+
+
+
+
+
+Modal-Key: wk-coDFtxnos13uHrL5PUfmpk.ws-mHn2A8MeneCjTugPWzoHCO
+Modal-Secret: 
