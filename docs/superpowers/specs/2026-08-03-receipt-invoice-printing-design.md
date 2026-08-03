@@ -10,7 +10,8 @@ Add receipt and invoice printing to SalesPulse (Next.js 16 + Convex POS app for 
 ## Goals / Non-Goals
 
 **Goals**
-- Auto-print a 58mm thermal receipt after every successful checkout in the POS terminal.
+- Show a preview dialog with the document before every print (both auto-flow after checkout and reprint from Sales Logs); printing only happens after the user clicks Print in the preview.
+- Auto-open the 58mm thermal receipt preview after every successful checkout in the POS terminal.
 - Reprint a receipt or print an A4 invoice for any completed sale from the Sales Logs page.
 - Include the SalesPulse logo and shop identity (name, phone, address, TIN/VAT) on both documents.
 - Never block a sale if printing fails.
@@ -57,6 +58,7 @@ New directory `src/components/print/`:
 
 - **`ReceiptDocument.tsx`** — 58mm thermal receipt. Compact monospace layout: logo/name header, shop contact + TIN/VAT, sale id + date + operator, itemized lines (name, qty × unit, line total), subtotal/discount/total, payment summary, thank-you footer. Accepts `PrintData`, `forwardRef` for react-to-print.
 - **`InvoiceDocument.tsx`** — A4 invoice. Header with logo + shop identity, INVOICE title with invoice number/sale id + date, customer block, itemized table with columns (item, qty, unit price, amount), subtotal/discount/total, payment summary, notes/signature area. Accepts `PrintData`, `forwardRef`.
+- **`PrintPreviewDialog.tsx`** — reusable preview dialog. Renders a document (receipt or invoice) at its target paper size in a modal, with **Print** and **Cancel** buttons. Print is wired to the document's react-to-print `handlePrint`; Cancel just closes. Used by both POS and Sales Logs.
 - **`print-data.ts`** — helpers:
   - `saleToPrintData(sale: Sale, shop): PrintData`
   - `cartToPrintData({ saleId, cart, discountCents, totalCents, paymentMethod, customerName }, shop): PrintData`
@@ -68,14 +70,14 @@ Add `react-to-print` (v3+, React 19 compatible).
 
 ### POS (`src/app/(dashboard)/pos/page.tsx`)
 - Add `lastSale: PrintData | null` state.
-- On `createSale` resolve: build print data from the local cart (already in memory) + returned `{ id }` + settings, set `lastSale`, then trigger `handlePrint` on the receipt.
-- The `ReceiptDocument` is always mounted but visually hidden (off-screen/`display:none` via a wrapper that is NOT `print:hidden`), so the print iframe is created within the user-gesture window and popup blocking is avoided. The document is fed from `lastSale`.
+- On `createSale` resolve: build print data from the local cart (already in memory) + returned `{ id }` + settings, set `lastSale` → this opens the receipt preview dialog. The user clicks **Print** to print, or **Cancel**/closes to skip.
+- The `ReceiptDocument` is rendered inside the preview dialog (which stays mounted while `lastSale` is set), so the print iframe is created within the user-gesture window and popup blocking is avoided.
 - Receipt print failure shows a toast; the sale is already complete and checkout continues normally.
 
 ### Sales Logs (`src/app/(dashboard)/sales/page.tsx`)
 - For each completed sale row, add **Receipt** and **Invoice** action buttons.
-- Clicking a button prints that sale directly using `useGetSale(id)` to fetch full sale data, mapped via `saleToPrintData`. No intermediate preview dialog — the print dialog opens immediately.
-- Two `useReactToPrint` instances (receipt + invoice), each with its own mounted hidden document populated from the selected sale.
+- Clicking a button opens a preview dialog showing the document (receipt at 58mm, invoice at A4) for that sale, populated via `useGetSale(id)` → `saleToPrintData`. Printing happens only when the user clicks **Print** in the preview.
+- Two `useReactToPrint` instances (receipt + invoice), each mounted inside the preview dialog and populated from the selected sale.
 - A sale is still voidable as today; the buttons render only for `status === 'completed'`.
 
 ## Paper Sizing (CSS)
@@ -107,6 +109,6 @@ Add `react-to-print` (v3+, React 19 compatible).
 - `src/app/(dashboard)/settings/page.tsx` — form fields for phone/address/TIN/VAT
 - `src/app/(dashboard)/pos/page.tsx` — auto-print wiring
 - `src/app/(dashboard)/sales/page.tsx` — reprint + invoice buttons
-- `src/components/print/` — new: `ReceiptDocument.tsx`, `InvoiceDocument.tsx`, `print-data.ts`
+- `src/components/print/` — new: `ReceiptDocument.tsx`, `InvoiceDocument.tsx`, `PrintPreviewDialog.tsx`, `print-data.ts`
 - `public/logo.png` — user-provided logo (fallback until present)
 - `package.json` — add `react-to-print`
