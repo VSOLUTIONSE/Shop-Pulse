@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useLayoutEffect, useEffect } from 'react';
+import { useRef, useState, useLayoutEffect, useCallback } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import {
   Dialog,
@@ -51,21 +51,31 @@ export default function PrintPreviewDialog({
     return () => ro.disconnect();
   }, [paperWidth]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!data) return;
-    const t = setTimeout(() => {
-      if (contentRef.current) setContentHeight(contentRef.current.offsetHeight);
-    }, 0);
-    return () => clearTimeout(t);
+    const el = contentRef.current;
+    if (!el) return;
+    const update = () => setContentHeight(el.offsetHeight);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, [data, documentType]);
+
+  const onAfterPrint = useCallback(() => onOpenChange(false), [onOpenChange]);
+  const onPrintError = useCallback(
+    (_loc: string, err: Error) => {
+      toast({ title: 'Print failed', description: String(err), variant: 'destructive' });
+    },
+    [toast]
+  );
+  const documentTitleFn = useCallback(() => documentTitle, [documentTitle]);
 
   const handlePrint = useReactToPrint({
     contentRef,
-    documentTitle: () => documentTitle,
-    onAfterPrint: () => onOpenChange(false),
-    onPrintError: (_loc, err) => {
-      toast({ title: 'Print failed', description: String(err), variant: 'destructive' });
-    },
+    documentTitle: documentTitleFn,
+    onAfterPrint,
+    onPrintError,
   });
 
   return (
@@ -80,27 +90,21 @@ export default function PrintPreviewDialog({
 
         <div
           ref={containerRef}
-          className="flex-1 min-h-0 overflow-hidden rounded-lg bg-muted/40 p-6"
+          className="flex-1 min-h-0 overflow-auto rounded-lg bg-muted/40 p-6"
         >
           {data ? (
             <div
               className="mx-auto"
               style={{ width: paperWidth * scale, height: Math.max(contentHeight * scale, 1) }}
             >
-              <div
-                ref={contentRef}
-                className="shadow-md"
-                style={{
-                  width: paperWidth,
-                  transform: `scale(${scale})`,
-                  transformOrigin: 'top left',
-                }}
-              >
-                {documentType === 'receipt' ? (
-                  <ReceiptDocument data={data} />
-                ) : (
-                  <InvoiceDocument data={data} />
-                )}
+              <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+                <div ref={contentRef} className="shadow-md" style={{ width: paperWidth }}>
+                  {documentType === 'receipt' ? (
+                    <ReceiptDocument data={data} />
+                  ) : (
+                    <InvoiceDocument data={data} />
+                  )}
+                </div>
               </div>
             </div>
           ) : (
