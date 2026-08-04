@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRef, useState, useLayoutEffect, useCallback } from 'react';
-import { useReactToPrint } from 'react-to-print';
+import { useRef, useState, useLayoutEffect, useCallback } from "react";
+import { useReactToPrint } from "react-to-print";
 import {
   Dialog,
   DialogContent,
@@ -9,19 +9,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import ReceiptDocument from './ReceiptDocument';
-import InvoiceDocument from './InvoiceDocument';
-import type { PrintData } from './print-data';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import ReceiptDocument from "./ReceiptDocument";
+import InvoiceDocument from "./InvoiceDocument";
+import type { PrintData } from "./print-data";
 
 const PAPER_WIDTH_PX = { receipt: 219, invoice: 794 } as const;
 
 interface PrintPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  documentType: 'receipt' | 'invoice';
+  documentType: "receipt" | "invoice";
   data: PrintData | null;
   documentTitle: string;
 }
@@ -44,7 +44,8 @@ export default function PrintPreviewDialog({
   useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const update = () => setContainerSize({ width: el.clientWidth, height: el.clientHeight });
+    const update = () =>
+      setContainerSize({ width: el.clientWidth, height: el.clientHeight });
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
@@ -64,18 +65,19 @@ export default function PrintPreviewDialog({
 
   const PADDING = 48;
   const availableWidth = Math.max(containerSize.width - PADDING, 0);
-  const availableHeight = Math.max(containerSize.height - PADDING, 0);
   const widthScale = availableWidth > 0 ? availableWidth / paperWidth : 1;
-  const heightScale =
-    contentHeight > 0 && availableHeight > 0 ? availableHeight / contentHeight : widthScale;
-  const scale = Math.max(0, Math.min(1, widthScale, heightScale));
+  const scale = Math.max(0, Math.min(1, widthScale));
 
   const onAfterPrint = useCallback(() => onOpenChange(false), [onOpenChange]);
   const onPrintError = useCallback(
     (_loc: string, err: Error) => {
-      toast({ title: 'Print failed', description: String(err), variant: 'destructive' });
+      toast({
+        title: "Print failed",
+        description: String(err),
+        variant: "destructive",
+      });
     },
-    [toast]
+    [toast],
   );
   const documentTitleFn = useCallback(() => documentTitle, [documentTitle]);
 
@@ -88,9 +90,14 @@ export default function PrintPreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
+      <DialogContent
+        className="sm:max-w-3xl max-h-[90vh] flex-col"
+        style={{ display: "flex", overflow: "hidden" }}
+      >
         <DialogHeader>
-          <DialogTitle>{documentType === 'receipt' ? 'Receipt Preview' : 'Invoice Preview'}</DialogTitle>
+          <DialogTitle>
+            {documentType === "receipt" ? "Receipt Preview" : "Invoice Preview"}
+          </DialogTitle>
           <DialogDescription>
             Review the {documentType} before printing.
           </DialogDescription>
@@ -98,16 +105,28 @@ export default function PrintPreviewDialog({
 
         <div
           ref={containerRef}
-          className="flex-1 min-h-0 overflow-auto rounded-lg bg-muted/40 p-6"
+          className="flex-1 min-h-[300px] overflow-auto rounded-lg bg-muted/40 p-6"
         >
           {data ? (
             <div
               className="mx-auto"
-              style={{ width: paperWidth * scale, height: Math.max(contentHeight * scale, 1) }}
+              style={{
+                width: paperWidth * scale,
+                height: Math.max(contentHeight * scale, 1),
+              }}
             >
-              <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
-                <div ref={contentRef} className="shadow-md" style={{ width: paperWidth }}>
-                  {documentType === 'receipt' ? (
+              <div
+                style={{
+                  transform: `scale(${scale})`,
+                  transformOrigin: "top left",
+                }}
+              >
+                <div
+                  ref={contentRef}
+                  className="shadow-md"
+                  style={{ width: paperWidth }}
+                >
+                  {documentType === "receipt" ? (
                     <ReceiptDocument data={data} />
                   ) : (
                     <InvoiceDocument data={data} />
@@ -127,7 +146,7 @@ export default function PrintPreviewDialog({
             Cancel
           </Button>
           <Button onClick={() => handlePrint()} disabled={!data}>
-            Print {documentType === 'receipt' ? 'Receipt' : 'Invoice'}
+            Print {documentType === "receipt" ? "Receipt" : "Invoice"}
           </Button>
         </DialogFooter>
       </DialogContent>
