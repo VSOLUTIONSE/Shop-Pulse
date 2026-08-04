@@ -24,8 +24,9 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           background: '#fff',
           color: '#000',
           fontFamily: 'JetBrains Mono, monospace',
-          fontSize: '10px',
-          lineHeight: 1.35,
+          fontSize: '12px',
+          fontWeight: 700,
+          lineHeight: 1.4,
           padding: '3mm 2mm',
           boxSizing: 'border-box',
         }}
@@ -59,7 +60,7 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
               style={{ maxHeight: '12mm', maxWidth: '50mm', objectFit: 'contain' }}
             />
           )}
-          <div style={{ fontWeight: 700, fontSize: '11px', marginTop: '1mm' }}>
+          <div style={{ fontWeight: 700, fontSize: '14px', marginTop: '1mm' }}>
             {data.shop.name}
           </div>
           {data.shop.address && <div>{data.shop.address}</div>}
@@ -116,7 +117,7 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
             <span>-{fmt(data.discountCents)}</span>
           </div>
         )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '14px' }}>
           <span>TOTAL</span>
           <span>{fmt(data.totalCents)}</span>
         </div>
