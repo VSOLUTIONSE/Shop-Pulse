@@ -38,18 +38,18 @@ export default function PrintPreviewDialog({
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const [scale, setScale] = useState(1);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [contentHeight, setContentHeight] = useState(0);
 
   useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const update = () => setScale(Math.min(1, el.clientWidth / paperWidth));
+    const update = () => setContainerSize({ width: el.clientWidth, height: el.clientHeight });
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [paperWidth]);
+  }, []);
 
   useLayoutEffect(() => {
     if (!data) return;
@@ -61,6 +61,14 @@ export default function PrintPreviewDialog({
     ro.observe(el);
     return () => ro.disconnect();
   }, [data, documentType]);
+
+  const PADDING = 48;
+  const availableWidth = Math.max(containerSize.width - PADDING, 0);
+  const availableHeight = Math.max(containerSize.height - PADDING, 0);
+  const widthScale = availableWidth > 0 ? availableWidth / paperWidth : 1;
+  const heightScale =
+    contentHeight > 0 && availableHeight > 0 ? availableHeight / contentHeight : widthScale;
+  const scale = Math.max(0, Math.min(1, widthScale, heightScale));
 
   const onAfterPrint = useCallback(() => onOpenChange(false), [onOpenChange]);
   const onPrintError = useCallback(
