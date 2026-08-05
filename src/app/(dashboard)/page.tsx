@@ -111,7 +111,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-num tracking-tight">{formatMoney(todaySession?.totalSalesCents ?? 0)}</div>
+            <div className="text-3xl font-bold font-num tracking-tight min-w-0 break-words">{formatMoney(todaySession?.totalSalesCents ?? 0)}</div>
             <p className="text-xs text-muted-foreground mt-1">{todaySession?.saleCount ?? 0} transaction{todaySession?.saleCount !== 1 ? 's' : ''}</p>
           </CardContent>
         </Card>
@@ -125,7 +125,7 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-num tracking-tight text-green-700 dark:text-green-400">
+              <div className="text-3xl font-bold font-num tracking-tight text-green-700 dark:text-green-400 min-w-0 break-words">
                 {formatMoney(todaySession?.totalProfitCents ?? 0)}
               </div>
             </CardContent>
@@ -140,7 +140,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-num tracking-tight">{formatMoney(summary?.totalDebtCents)}</div>
+            <div className="text-3xl font-bold font-num tracking-tight min-w-0 break-words">{formatMoney(summary?.totalDebtCents)}</div>
             <p className="text-xs text-muted-foreground mt-1">Across {summary?.activeDebtAccounts} accounts</p>
           </CardContent>
         </Card>
@@ -153,7 +153,7 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold font-num tracking-tight">{formatMoney(summary?.monthlyExpensesCents)}</div>
+            <div className="text-3xl font-bold font-num tracking-tight min-w-0 break-words">{formatMoney(summary?.monthlyExpensesCents)}</div>
           </CardContent>
         </Card>
       </div>
@@ -168,7 +168,7 @@ export default function Dashboard() {
             <div className="h-[300px] w-full">
               {summary?.revenueChart && summary.revenueChart.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={summary.revenueChart} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <AreaChart data={summary.revenueChart} margin={{ top: 10, right: 10, left: 5, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -185,7 +185,8 @@ export default function Dashboard() {
                       dy={10}
                     />
                     <YAxis
-                      tickFormatter={(val) => `₦${(val/100).toLocaleString()}`}
+                      width={70}
+                      tickFormatter={(val) => `₦${new Intl.NumberFormat('en-NG', { notation: 'compact', maximumFractionDigits: 1 }).format((val as number) / 100)}`}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}

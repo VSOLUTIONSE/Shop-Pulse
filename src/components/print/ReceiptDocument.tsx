@@ -25,8 +25,8 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           color: '#000',
           fontFamily: 'JetBrains Mono, monospace',
           fontSize: '12px',
-          fontWeight: 700,
-          lineHeight: 1.4,
+          fontWeight: 400,
+          lineHeight: 1.5,
           padding: '3mm 2mm',
           boxSizing: 'border-box',
         }}
@@ -63,68 +63,92 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           <div style={{ fontWeight: 700, fontSize: '14px', marginTop: '1mm' }}>
             {data.shop.name}
           </div>
-          {data.shop.address && <div>{data.shop.address}</div>}
-          {data.shop.phone && <div>{data.shop.phone}</div>}
-          {data.shop.tinVat && <div>TIN: {data.shop.tinVat}</div>}
+          {data.shop.address && <div style={{ fontSize: '11px' }}>{data.shop.address}</div>}
+          {data.shop.phone && <div style={{ fontSize: '11px' }}>{data.shop.phone}</div>}
         </div>
 
-        <div style={{ borderTop: '1px dashed #000', margin: '2mm 0', paddingTop: '1mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Receipt: #{String(data.saleId).padStart(4, '0')}</span>
+        <div style={{ borderTop: '1px dashed #000', margin: '2mm 0', paddingTop: '1.5mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
+            <span>Receipt</span>
+            <span>#{String(data.saleId).padStart(4, '0')}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Date:</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
+            <span>Date</span>
             <span>{new Date(data.date).toLocaleString('en-NG')}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Cashier:</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
+            <span>Cashier</span>
             <span style={{ textTransform: 'capitalize' }}>{data.operatorRole}</span>
           </div>
           {data.customerName && (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Customer:</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
+              <span>Customer</span>
               <span>{data.customerName}</span>
             </div>
           )}
         </div>
 
-        <div style={{ borderTop: '1px dashed #000', borderBottom: '1px dashed #000', padding: '1mm 0', margin: '1mm 0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+        <div
+          style={{
+            borderTop: '1px dashed #000',
+            borderBottom: '1px dashed #000',
+            padding: '1.5mm 0',
+            margin: '1mm 0',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontWeight: 700,
+              marginBottom: '1mm',
+            }}
+          >
             <span>Item</span>
-            <span>Qty x Price</span>
             <span>Amount</span>
           </div>
           {data.items.map((item, idx) => (
-            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', gap: '1mm' }}>
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div key={idx} style={{ marginTop: '1mm' }}>
+              <div style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
                 {item.productName}
-              </span>
-              <span style={{ whiteSpace: 'nowrap' }}>
-                {item.quantity} x {fmt(item.unitPriceCents)}
-              </span>
-              <span style={{ whiteSpace: 'nowrap' }}>{fmt(item.lineTotalCents)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
+                <span>
+                  {item.quantity} x {fmt(item.unitPriceCents)}
+                </span>
+                <span>{fmt(item.lineTotalCents)}</span>
+              </div>
             </div>
           ))}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm', marginTop: '1.5mm' }}>
           <span>Subtotal</span>
           <span>{fmt(data.subtotalCents)}</span>
         </div>
         {data.discountCents > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
             <span>Discount</span>
             <span>-{fmt(data.discountCents)}</span>
           </div>
         )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '14px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: '2mm',
+            fontWeight: 700,
+            fontSize: '14px',
+            marginTop: '1mm',
+          }}
+        >
           <span>TOTAL</span>
           <span>{fmt(data.totalCents)}</span>
         </div>
 
-        <div style={{ borderTop: '1px dashed #000', margin: '2mm 0', paddingTop: '1mm' }}>
+        <div style={{ borderTop: '1px dashed #000', margin: '2mm 0', paddingTop: '1.5mm' }}>
           {data.payments.map((p, idx) => (
-            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
               <span style={{ textTransform: 'capitalize' }}>{p.method}</span>
               <span>{fmt(p.amountCents)}</span>
             </div>

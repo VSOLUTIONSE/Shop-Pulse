@@ -64,7 +64,6 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
             <div style={{ fontSize: '16px', fontWeight: 700 }}>{data.shop.name}</div>
             {data.shop.address && <div>{data.shop.address}</div>}
             {data.shop.phone && <div>{data.shop.phone}</div>}
-            {data.shop.tinVat && <div>TIN: {data.shop.tinVat}</div>}
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '26px', fontWeight: 800, letterSpacing: '2px' }}>INVOICE</div>
