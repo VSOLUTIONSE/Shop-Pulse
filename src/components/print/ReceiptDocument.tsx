@@ -65,7 +65,6 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           </div>
           {data.shop.address && <div style={{ fontSize: '11px' }}>{data.shop.address}</div>}
           {data.shop.phone && <div style={{ fontSize: '11px' }}>{data.shop.phone}</div>}
-          {data.shop.tinVat && <div style={{ fontSize: '11px' }}>TIN: {data.shop.tinVat}</div>}
         </div>
 
         <div style={{ borderTop: '1px dashed #000', margin: '2mm 0', paddingTop: '1.5mm' }}>
