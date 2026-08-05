@@ -65,15 +65,6 @@ export default function Expenses() {
   const { isOwner, isLoaded } = useRole();
   const router = useRouter();
 
-  useEffect(() => {
-    if (isLoaded && !isOwner) {
-      router.push('/');
-    }
-  }, [isLoaded, isOwner, router]);
-
-  if (!isLoaded) return <div className="p-8">Loading...</div>;
-  if (!isOwner) return null;
-
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
@@ -90,6 +81,15 @@ export default function Expenses() {
   const createExpense = useCreateExpense();
   const deleteExpense = useDeleteExpense();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (isLoaded && !isOwner) {
+      router.push('/');
+    }
+  }, [isLoaded, isOwner, router]);
+
+  if (!isLoaded) return <div className="p-8">Loading...</div>;
+  if (!isOwner) return null;
 
   const filteredExpenses = categoryFilter
     ? expenses?.filter(e => e.category === categoryFilter)
