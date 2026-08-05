@@ -1,13 +1,14 @@
 'use client';
 
-import { useSignIn } from '@clerk/nextjs';
+import { useAuth, useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Store, Loader2, Eye, EyeOff } from 'lucide-react';
 
 export default function SignInPage() {
   const { signIn, errors, fetchStatus } = useSignIn();
+  const { isLoaded: isAuthLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,12 +21,23 @@ export default function SignInPage() {
   const isLoaded = fetchStatus !== 'fetching';
   const fieldError = errors.fields;
 
+  useEffect(() => {
+    if (isAuthLoaded && isSignedIn) {
+      window.location.href = '/';
+    }
+  }, [isAuthLoaded, isSignedIn]);
+
   const needsVerify =
     submitted && (signIn?.status === 'needs_client_trust' || signIn?.status === 'needs_second_factor');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!isLoaded || loading || !signIn) return;
+
+    if (isSignedIn) {
+      window.location.href = '/';
+      return;
+    }
 
     setError('');
     setLoading(true);
