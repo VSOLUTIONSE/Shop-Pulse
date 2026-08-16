@@ -74,7 +74,7 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
             <span>Date</span>
-            <span>{new Date(data.date).toLocaleString('en-NG')}</span>
+            <span>{new Date(data.date).toLocaleString('en-ZA')}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '2mm' }}>
             <span>Cashier</span>

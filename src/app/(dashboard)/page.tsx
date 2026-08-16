@@ -186,7 +186,7 @@ export default function Dashboard() {
                     />
                     <YAxis
                       width={70}
-                      tickFormatter={(val) => `₦${new Intl.NumberFormat('en-NG', { notation: 'compact', maximumFractionDigits: 1 }).format((val as number) / 100)}`}
+                      tickFormatter={(val) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', notation: 'compact', maximumFractionDigits: 1 }).format((val as number) / 100)}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}

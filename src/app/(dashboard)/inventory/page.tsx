@@ -342,12 +342,12 @@ export default function Inventory() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Selling Price (₦)</Label>
+                <Label>Selling Price (R)</Label>
                 <Input type="number" step="0.01" value={formData.sellingPrice} onChange={e => setFormData({...formData, sellingPrice: e.target.value})} placeholder="0.00" />
               </div>
               {isOwner && (
                 <div className="grid gap-2">
-                  <Label>Cost Price (₦)</Label>
+                  <Label>Cost Price (R)</Label>
                   <Input type="number" step="0.01" value={formData.costPrice} onChange={e => setFormData({...formData, costPrice: e.target.value})} placeholder="0.00" />
                 </div>
               )}
@@ -389,7 +389,7 @@ export default function Inventory() {
             </div>
             {isOwner && (
               <div className="grid gap-2">
-                <Label>New Cost Price (₦) (Updates catalog)</Label>
+                <Label>New Cost Price (R) (Updates catalog)</Label>
                 <Input type="number" step="0.01" value={restockData.costPrice} onChange={e => setRestockData({...restockData, costPrice: e.target.value})} placeholder="0.00" />
               </div>
             )}
