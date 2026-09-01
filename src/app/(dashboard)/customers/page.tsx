@@ -72,8 +72,8 @@ export default function Customers() {
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col md:flex-row gap-6">
-      <div className="w-full md:w-[350px] lg:w-[400px] flex flex-col bg-card border border-border/50 rounded-xl shadow-sm shrink-0">
-        <div className="p-4 border-b border-border/50 bg-muted/10 space-y-4">
+      <div className="w-full md:w-[350px] lg:w-[400px] flex flex-col bg-card border border-border/40 rounded-2xl shadow-xs shrink-0">
+        <div className="p-4 border-b border-border/40 bg-muted/10 space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="font-semibold text-lg">Customer Registry</h2>
             <Button size="sm" onClick={() => setCreateModalOpen(true)}>
@@ -106,10 +106,10 @@ export default function Customers() {
               <button
                 key={customer.id}
                 onClick={() => setActiveCustomerId(customer.id)}
-                className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all text-left ${
+                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all duration-200 text-left ${
                   activeCustomerId === customer.id
-                    ? 'border-primary bg-primary/5 shadow-sm'
-                    : 'border-border/50 hover:border-border hover:bg-muted/30'
+                    ? 'border-primary bg-primary/5 shadow-xs'
+                    : 'border-border/40 hover:border-border hover:bg-muted/30'
                 }`}
               >
                 <div className="flex flex-col overflow-hidden mr-3">
@@ -132,7 +132,7 @@ export default function Customers() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0 bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 bg-card border border-border/40 rounded-2xl shadow-xs overflow-hidden">
         {!activeCustomerId ? (
           <div className="h-full flex flex-col items-center justify-center text-muted-foreground bg-muted/5">
             <ArrowRight className="w-12 h-12 mb-4 opacity-20 hidden md:block" />
@@ -145,7 +145,7 @@ export default function Customers() {
           </div>
         ) : customerDetail && (
           <>
-            <div className="p-6 border-b border-border/50 bg-gradient-to-r from-muted/30 to-background flex justify-between items-start">
+            <div className="p-6 border-b border-border/40 bg-gradient-to-r from-muted/30 to-background flex justify-between items-start">
               <div>
                 <h2 className="text-2xl font-bold">{customerDetail.name}</h2>
                 <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
@@ -179,7 +179,7 @@ export default function Customers() {
                 <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
                   {customerDetail.ledger.map((entry: any) => (
                     <div key={entry.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-background bg-card shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-xl border-4 border-background bg-card shadow-sm shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
                         {entry.type === 'charge' ? (
                           <ArrowUpRight className="w-4 h-4 text-orange-500" />
                         ) : (
@@ -187,7 +187,7 @@ export default function Customers() {
                         )}
                       </div>
 
-                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] border border-border/50 bg-background p-4 rounded-xl shadow-sm">
+                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] border border-border/40 bg-background p-4 rounded-2xl shadow-xs">
                         <div className="flex justify-between items-start mb-1">
                           <Badge variant={entry.type === 'charge' ? 'outline' : 'secondary'} className={entry.type === 'charge' ? 'text-orange-600 border-orange-200 bg-orange-50' : 'bg-green-100 text-green-800'}>
                             {entry.type === 'charge' ? 'Credit Purchase' : 'Payment Received'}

@@ -114,10 +114,10 @@ export default function SignInPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
         <div className="w-full max-w-sm">
-          <div className="rounded-xl border border-border/50 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
+          <div className="rounded-2xl border border-border/40 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
             <div className="p-8 space-y-6">
               <div className="text-center space-y-2">
-                <div className="mx-auto h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                   <Store className="h-7 w-7 text-primary" />
                 </div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -144,7 +144,7 @@ export default function SignInPage() {
                     placeholder="000000"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="w-full h-10 px-3 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm text-center tracking-widest focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                    className="w-full h-10 px-3 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm text-center tracking-widest focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                   />
                   {fieldError.code && (
                     <p className="text-xs text-destructive">{fieldError.code.message}</p>
@@ -182,10 +182,10 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <div className="w-full max-w-sm">
-        <div className="rounded-xl border border-border/50 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
+        <div className="rounded-2xl border border-border/40 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
           <div className="p-8 space-y-6">
             <div className="text-center space-y-2">
-              <div className="mx-auto h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                 <Store className="h-7 w-7 text-primary" />
               </div>
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -210,7 +210,7 @@ export default function SignInPage() {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                  className="w-full h-10 px-3 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                 />
                 {fieldError.identifier && (
                   <p className="text-xs text-destructive">{fieldError.identifier.message}</p>
@@ -230,7 +230,7 @@ export default function SignInPage() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-10 px-3 pr-10 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                    className="w-full h-10 px-3 pr-10 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                   />
                   <button
                     type="button"

@@ -85,10 +85,10 @@ export default function SignUpPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
         <div className="w-full max-w-sm">
-          <div className="rounded-xl border border-border/50 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
+          <div className="rounded-2xl border border-border/40 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
             <div className="p-8 space-y-6">
               <div className="text-center space-y-2">
-                <div className="mx-auto h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                   <Store className="h-7 w-7 text-primary" />
                 </div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -112,7 +112,7 @@ export default function SignUpPage() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-10 px-3 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                    className="w-full h-10 px-3 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                   />
                   {fieldError.emailAddress && (
                     <p className="text-xs text-destructive">{fieldError.emailAddress.message}</p>
@@ -132,7 +132,7 @@ export default function SignUpPage() {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full h-10 px-3 pr-10 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                      className="w-full h-10 px-3 pr-10 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                     />
                     <button
                       type="button"
@@ -161,7 +161,7 @@ export default function SignUpPage() {
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full h-10 px-3 pr-10 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                      className="w-full h-10 px-3 pr-10 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                     />
                     <button
                       type="button"

@@ -109,8 +109,8 @@ export default function Sales() {
         <p className="text-muted-foreground mt-1">View and manage transaction history.</p>
       </div>
 
-      <Card className="border-border/50 shadow-sm">
-        <div className="p-4 border-b border-border/50 bg-muted/20 flex flex-col sm:flex-row gap-4">
+      <Card className="border-border/40 shadow-xs">
+        <div className="p-4 border-b border-border/40 bg-muted/20 flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -122,7 +122,7 @@ export default function Sales() {
           </div>
           <div className="flex gap-2">
             <select
-              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="h-10 rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as any)}
             >
@@ -131,7 +131,7 @@ export default function Sales() {
               <option value="voided">Voided</option>
             </select>
             <select
-              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="h-10 rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               value={paymentFilter}
               onChange={(e) => setPaymentFilter(e.target.value as any)}
             >

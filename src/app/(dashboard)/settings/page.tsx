@@ -125,7 +125,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card className="border-border/50 shadow-sm">
+        <Card className="border-border/40 shadow-xs">
           <CardHeader>
             <CardTitle>Business Details</CardTitle>
             <CardDescription>Basic information for receipts and UI.</CardDescription>
@@ -179,13 +179,13 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 shadow-sm h-fit">
+        <Card className="border-border/40 shadow-xs h-fit">
           <CardHeader>
             <CardTitle>Backup & Restore</CardTitle>
             <CardDescription>Offline-first safety. Keep regular backups of your database.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="p-4 border border-border/50 rounded-xl bg-muted/10 space-y-3">
+            <div className="p-4 border border-border/40 rounded-2xl bg-muted/10 space-y-3">
               <div>
                 <h3 className="font-semibold text-sm">Export Data</h3>
                 <p className="text-xs text-muted-foreground mt-1">Download a complete JSON snapshot of all products, sales, and ledgers.</p>
@@ -195,7 +195,7 @@ export default function SettingsPage() {
               </Button>
             </div>
 
-            <div className="p-4 border border-destructive/20 rounded-xl bg-destructive/5 space-y-3">
+            <div className="p-4 border border-destructive/20 rounded-2xl bg-destructive/5 space-y-3">
               <div className="flex gap-2">
                 <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
                 <div>

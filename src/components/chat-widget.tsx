@@ -34,7 +34,7 @@ export function ChatWidget() {
       {open && <ChatPanel onClose={() => setOpen(false)} />}
       <button
         onClick={() => setOpen((p) => !p)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-indigo-600 text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl bg-gradient-to-r from-primary to-indigo-600 text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
       >
         {open ? (
           <X className="w-6 h-6" />
@@ -85,10 +85,10 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-10rem)] bg-card border border-border/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-muted/10 shrink-0">
+    <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-10rem)] bg-card border border-border/40 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-muted/10 shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-primary" />
           </div>
           <div>
@@ -113,7 +113,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
             </div>
           ) : messages.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <div className="w-12 h-12 rounded-full bg-muted mx-auto flex items-center justify-center mb-3">
+              <div className="w-12 h-12 rounded-2xl bg-muted/60 mx-auto flex items-center justify-center mb-3">
                 <MessageCircle className="w-6 h-6 opacity-30" />
               </div>
               <p className="text-sm font-medium mb-1">How can I help you today?</p>
@@ -129,7 +129,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
 
           {sendMessage.isPending && (
             <div className="flex items-start gap-2">
-              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                 <Bot className="w-3.5 h-3.5 text-primary" />
               </div>
               <div className="bg-muted/50 rounded-2xl rounded-tl-sm px-3.5 py-2.5">
@@ -144,7 +144,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         </div>
       </ScrollArea>
 
-      <div className="border-t border-border/50 p-3 bg-muted/5 shrink-0">
+      <div className="border-t border-border/40 p-3 bg-muted/5 shrink-0">
         <div className="flex items-center gap-2">
           <Input
             value={input}
@@ -178,7 +178,7 @@ function ChatBubble({ message }: { message: AiChatMessage }) {
   return (
     <div className={`flex items-start gap-2 ${isUser ? 'flex-row-reverse' : ''}`}>
       <div
-        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+        className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
           isUser ? 'bg-primary/10' : 'bg-muted/20'
         }`}
       >

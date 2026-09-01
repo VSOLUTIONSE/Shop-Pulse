@@ -132,11 +132,11 @@ export default function Expenses() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <Card className="border-border/50 shadow-sm h-full">
-            <div className="p-4 border-b border-border/50 bg-muted/20 flex gap-4 items-center">
+          <Card className="border-border/40 shadow-xs h-full">
+            <div className="p-4 border-b border-border/40 bg-muted/20 flex gap-4 items-center">
               <span className="text-sm font-medium">Filter:</span>
               <select
-                className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="h-9 rounded-xl border border-input bg-background px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
               >
@@ -199,7 +199,7 @@ export default function Expenses() {
         </div>
 
         <div>
-          <Card className="border-border/50 shadow-sm bg-gradient-to-br from-card to-destructive/5">
+          <Card className="border-border/40 shadow-xs bg-gradient-to-br from-card to-destructive/5">
             <CardContent className="p-6">
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Total Logged</h3>
               <div className="text-4xl font-num font-black text-destructive tracking-tighter">
@@ -223,7 +223,7 @@ export default function Expenses() {
               <div className="grid gap-2">
                 <Label>Category</Label>
                 <select
-                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="flex h-10 w-full items-center justify-between rounded-xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   value={formData.category}
                   onChange={e => setFormData({ ...formData, category: e.target.value })}
                 >

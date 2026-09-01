@@ -49,8 +49,8 @@ export default function Dashboard() {
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
           {todaySession && (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-              todaySession.status === 'open' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-muted text-muted-foreground'
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xl text-xs font-semibold ${
+              todaySession.status === 'open' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-muted text-muted-foreground'
             }`}>
               <span className={`w-1.5 h-1.5 rounded-full ${todaySession.status === 'open' ? 'bg-green-500' : 'bg-muted-foreground'}`} />
               {todaySession.status === 'open' ? 'Sales Open' : 'Sales Closed'}
@@ -58,7 +58,7 @@ export default function Dashboard() {
           )}
         </div>
         <div className="flex flex-col items-center justify-center py-24 text-center max-w-md mx-auto">
-          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+          <div className="w-20 h-20 bg-muted/60 rounded-2xl flex items-center justify-center mb-6">
             <ShoppingBag className="w-10 h-10 text-muted-foreground/40" />
           </div>
           <h2 className="text-xl font-semibold mb-2">{isClosed ? 'Today&apos;s sales are closed' : 'Your sales record is empty'}</h2>
@@ -103,10 +103,10 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <Card className="shadow-sm border-border/50">
+        <Card className="shadow-xs border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Today&apos;s Revenue</CardTitle>
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-primary" />
             </div>
           </CardHeader>
@@ -117,10 +117,10 @@ export default function Dashboard() {
         </Card>
 
         {isOwner && (
-          <Card className="shadow-sm border-border/50 bg-gradient-to-br from-card to-primary/5">
+          <Card className="shadow-xs border-border/40 bg-gradient-to-br from-card to-primary/5">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Today&apos;s Profit</CardTitle>
-              <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center">
                 <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
               </div>
             </CardHeader>
@@ -132,10 +132,10 @@ export default function Dashboard() {
           </Card>
         )}
 
-        <Card className="shadow-sm border-border/50">
+        <Card className="shadow-xs border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Active Debt</CardTitle>
-            <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center">
               <CreditCard className="w-4 h-4 text-orange-600 dark:text-orange-400" />
             </div>
           </CardHeader>
@@ -145,10 +145,10 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm border-border/50">
+        <Card className="shadow-xs border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Monthly Expenses</CardTitle>
-            <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-destructive/10 flex items-center justify-center">
               <Receipt className="w-4 h-4 text-destructive" />
             </div>
           </CardHeader>
@@ -159,7 +159,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 shadow-sm border-border/50">
+        <Card className="lg:col-span-2 shadow-xs border-border/40">
           <CardHeader>
             <CardTitle>Revenue Trend</CardTitle>
             <CardDescription>Daily revenue for the past week</CardDescription>
@@ -217,7 +217,7 @@ export default function Dashboard() {
         </Card>
 
         <div className="space-y-6 flex flex-col">
-          <Card className="shadow-sm border-border/50 flex-1">
+          <Card className="shadow-xs border-border/40 flex-1">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-destructive" />
@@ -250,7 +250,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="text-center py-6 text-muted-foreground text-sm flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-muted/60 flex items-center justify-center mb-3">
                     <Package className="w-6 h-6 opacity-50" />
                   </div>
                   Stock levels are healthy
@@ -259,7 +259,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm border-border/50 flex-1">
+          <Card className="shadow-xs border-border/40 flex-1">
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle>Recent Sales</CardTitle>
               <Button variant="ghost" size="icon" asChild className="h-8 w-8 -mr-2">

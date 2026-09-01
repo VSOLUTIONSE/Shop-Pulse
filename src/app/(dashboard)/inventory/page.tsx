@@ -181,8 +181,8 @@ export default function Inventory() {
         </div>
       </div>
 
-      <Card className="border-border/50 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-border/50 bg-muted/20">
+      <Card className="border-border/40 shadow-xs overflow-hidden">
+        <div className="p-4 border-b border-border/40 bg-muted/20">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
@@ -327,7 +327,7 @@ export default function Inventory() {
               <div className="grid gap-2">
                 <Label>Category</Label>
                 <select 
-                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="flex h-10 w-full items-center justify-between rounded-xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   value={formData.categoryId}
                   onChange={e => setFormData({...formData, categoryId: e.target.value})}
                 >
@@ -379,7 +379,7 @@ export default function Inventory() {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
-            <div className="bg-muted/30 p-3 rounded-lg flex justify-between items-center">
+            <div className="bg-muted/30 p-3 rounded-xl flex justify-between items-center">
               <span className="font-semibold">{activeProduct?.name}</span>
               <Badge variant="secondary" className="font-mono">Current: {activeProduct?.stockLevel}</Badge>
             </div>
@@ -412,7 +412,7 @@ export default function Inventory() {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
-             <div className="bg-muted/30 p-3 rounded-lg flex justify-between items-center">
+             <div className="bg-muted/30 p-3 rounded-xl flex justify-between items-center">
               <span className="font-semibold">{activeProduct?.name}</span>
               <Badge variant="secondary" className="font-mono">Current: {activeProduct?.stockLevel}</Badge>
             </div>
@@ -465,7 +465,7 @@ export default function Inventory() {
               <Input value={categoryName} onChange={e => setCategoryName(e.target.value)} placeholder="New Category Name" />
               <Button onClick={handleCategorySubmit} disabled={!categoryName || createCategory.isPending}>Add</Button>
             </div>
-            <div className="border border-border/50 rounded-lg divide-y divide-border/50 max-h-60 overflow-auto">
+            <div className="border border-border/40 rounded-xl divide-y divide-border/40 max-h-60 overflow-auto">
               {categories?.map(c => (
                 <div key={c.id} className="p-3 text-sm flex justify-between items-center">
                   <span>{c.name}</span>
