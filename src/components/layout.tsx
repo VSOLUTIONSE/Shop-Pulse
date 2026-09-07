@@ -13,9 +13,9 @@ import {
   Wallet,
   LineChart,
   Settings,
-  Store,
   LogOut,
 } from 'lucide-react';
+import { BrandLogo } from '@/components/brand-logo';
 import {
   Sidebar,
   SidebarContent,
@@ -42,7 +42,7 @@ function SidebarNav() {
   const { data: settings } = useGetSettings();
 
   const navItems = [
-    { label: 'Overview', href: '/', icon: LayoutDashboard, exact: true },
+    { label: 'Overview', href: '/overview', icon: LayoutDashboard, exact: true },
     { label: 'POS Terminal', href: '/pos', icon: ShoppingCart },
     { label: 'Sales Logs', href: '/sales', icon: Receipt },
     { label: 'Inventory', href: '/inventory', icon: Package },
@@ -56,7 +56,7 @@ function SidebarNav() {
     <>
       <SidebarHeader className="border-b border-border/40 py-4 px-4">
         <div className="flex items-center gap-2.5 font-bold text-xl tracking-tight text-primary">
-          <Store className="h-5 w-5" />
+          <BrandLogo className="h-7 w-auto shrink-0" />
           <span className="truncate group-data-[collapsible=icon]:hidden">
             {settings === undefined ? <Skeleton className="h-6 w-24" /> : settings?.shopName || 'SalesPulse'}
           </span>
@@ -98,7 +98,7 @@ function SidebarNav() {
         </div>
         <button
           onClick={() => signOut({ redirectUrl: '/sign-in' })}
-          className="group-data-[collapsible=icon]:hidden flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200"
+          className="group-data-[collapsible=icon]:hidden flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors duration-150"
         >
           <LogOut className="h-4 w-4" />
           Sign Out

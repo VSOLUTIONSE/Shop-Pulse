@@ -60,20 +60,20 @@ Greet the Boss by name. Give a plain-language summary of how the shop is doing o
 **2. Financial Performance Breakdown**
 Use this exact format with the -- separator:
 --
-Total Sales Revenue: RX *(Total value of goods sold)*
-Estimated Cost of Goods Sold (COGS): RX *(What we paid to buy the items sold)*
-Gross Profit: RX
-Total Recorded Expenses: RX *(Breakdown of top expenses)*
-Estimated Net Profit/Loss: RX *(Explain if negative)*
+Total Sales Revenue: ₦X *(Total value of goods sold)*
+Estimated Cost of Goods Sold (COGS): ₦X *(What we paid to buy the items sold)*
+Gross Profit: ₦X
+Total Recorded Expenses: ₦X *(Breakdown of top expenses)*
+Estimated Net Profit/Loss: ₦X *(Explain if negative)*
 --
 
 **3. Debt & Outstanding Payments Tracker**
 List each customer who owes money with their phone number and balance. Use numbered list:
 1. Customer Name (Phone)
-Balance Owed: RX
+Balance Owed: ₦X
 *Note:* context if available
 
-Total Outstanding Debt: RX
+Total Outstanding Debt: ₦X
 
 **4. Urgent Restock Alerts (Low Stock)**
 List items running low with current stock and threshold:
@@ -84,34 +84,34 @@ List items running low with current stock and threshold:
 Encouraging sign-off. Offer to help with specific tasks (e.g. drafting WhatsApp payment reminders).
 
 CRITICAL RULES:
-- ALL monetary values in South African Rand (R). NEVER use $.
-- Divide cents by 100 to get Rand values.
+- ALL monetary values in Nigerian Naira (₦). NEVER use $ or other currency symbols.
+- Divide cents by 100 to get Naira values.
 - Keep it conversational and warm, like a trusted assistant talking to their boss.
 - Be optimistic but honest about challenges.`;
 
     const userPrompt = `Here is the current business data for ${data.shopName} to generate the report:
 
-**Sales:** ${data.totalSales} completed sales | Total revenue: R${(data.totalRevenue / 100).toLocaleString()} | Discounts given: R${(data.totalDiscounts / 100).toLocaleString()}
-**Payment methods:** Cash: R${(data.cashSales / 100).toLocaleString()} | Transfer: R${(data.transferSales / 100).toLocaleString()} | Card: R${(data.cardSales / 100).toLocaleString()} | Credit: R${(data.creditSales / 100).toLocaleString()}
+**Sales:** ${data.totalSales} completed sales | Total revenue: ₦${(data.totalRevenue / 100).toLocaleString()} | Discounts given: ₦${(data.totalDiscounts / 100).toLocaleString()}
+**Payment methods:** Cash: ₦${(data.cashSales / 100).toLocaleString()} | Transfer: ₦${(data.transferSales / 100).toLocaleString()} | Card: ₦${(data.cardSales / 100).toLocaleString()} | Credit: ₦${(data.creditSales / 100).toLocaleString()}
 
 **Products:** ${data.productCount} total | Low stock: ${data.lowStockCount} | Out of stock: ${data.outOfStockCount}
-**Stock value (cost):** R${(data.totalCost / 100).toLocaleString()}
+**Stock value (cost):** ₦${(data.totalCost / 100).toLocaleString()}
 
-**Customers:** ${data.customerCount} total | Outstanding credit: R${(data.totalCredit / 100).toLocaleString()}
+**Customers:** ${data.customerCount} total | Outstanding credit: ₦${(data.totalCredit / 100).toLocaleString()}
 
-**Expenses total:** R${(data.totalExpenses / 100).toLocaleString()}
+**Expenses total:** ₦${(data.totalExpenses / 100).toLocaleString()}
 
 **Debtors (people owing):**
-${data.debtors.map((d) => `${d.name} | ${d.phone} | R${(d.balanceCents / 100).toLocaleString()}`).join("\n")}
+${data.debtors.map((d) => `${d.name} | ${d.phone} | ₦${(d.balanceCents / 100).toLocaleString()}`).join("\n")}
 
 **Low stock items:**
 ${data.lowStockList.map((p) => `${p.name} | Stock: ${p.stockLevel} | Threshold: ${p.lowStockThreshold}`).join("\n")}
 
 **Recent expenses:**
-${data.recentExpenses.map((e) => `${e.category}: R${(e.amountCents / 100).toLocaleString()} - ${e.description}`).join("\n")}
+${data.recentExpenses.map((e) => `${e.category}: ₦${(e.amountCents / 100).toLocaleString()} - ${e.description}`).join("\n")}
 
 **Recent sales:**
-${data.recentSalesData.map((s) => `Sale #${s.id}: R${(s.totalCents / 100).toLocaleString()} (${s.itemCount} items)${s.customerName ? ` - ${s.customerName}` : ""}`).join("\n")}
+${data.recentSalesData.map((s) => `Sale #${s.id}: ₦${(s.totalCents / 100).toLocaleString()} (${s.itemCount} items)${s.customerName ? ` - ${s.customerName}` : ""}`).join("\n")}
 
 Generate the SalesPulse report now in the required format.`;
 
@@ -142,20 +142,20 @@ Generate the SalesPulse report now in the required format.`;
         `Good morning, Boss! ${data.shopName} is here to give you a quick, smart update on how things are going.`,
         ``,
         `**Business Summary**`,
-        `We've had ${data.totalSales} completed sales with total revenue of R${(data.totalRevenue / 100).toLocaleString()}. ${data.lowStockCount > 0 ? `${data.lowStockCount} items are running low and need restocking. ` : ""}Outstanding customer credit stands at R${(data.totalCredit / 100).toLocaleString()} across ${data.debtors.length} customers. Total expenses amount to R${(data.totalExpenses / 100).toLocaleString()}. Overall, the business is active and there are clear opportunities to improve cash flow by collecting debts and restocking fast-moving items.`,
+        `We've had ${data.totalSales} completed sales with total revenue of ₦${(data.totalRevenue / 100).toLocaleString()}. ${data.lowStockCount > 0 ? `${data.lowStockCount} items are running low and need restocking. ` : ""}Outstanding customer credit stands at ₦${(data.totalCredit / 100).toLocaleString()} across ${data.debtors.length} customers. Total expenses amount to ₦${(data.totalExpenses / 100).toLocaleString()}. Overall, the business is active and there are clear opportunities to improve cash flow by collecting debts and restocking fast-moving items.`,
         ``,
         `--`,
         `**Financial Performance Breakdown**`,
-        `Total Sales Revenue: R${(data.totalRevenue / 100).toLocaleString()}`,
-        `Estimated Cost of Goods Sold (COGS): R${(data.totalCost / 100).toLocaleString()}`,
-        `Gross Profit: R${((data.totalRevenue - data.totalCost) / 100).toLocaleString()}`,
-        `Total Recorded Expenses: R${(data.totalExpenses / 100).toLocaleString()}`,
-        `Estimated Net Profit/Loss: R${((data.totalRevenue - data.totalCost - data.totalExpenses) / 100).toLocaleString()}`,
+        `Total Sales Revenue: ₦${(data.totalRevenue / 100).toLocaleString()}`,
+        `Estimated Cost of Goods Sold (COGS): ₦${(data.totalCost / 100).toLocaleString()}`,
+        `Gross Profit: ₦${((data.totalRevenue - data.totalCost) / 100).toLocaleString()}`,
+        `Total Recorded Expenses: ₦${(data.totalExpenses / 100).toLocaleString()}`,
+        `Estimated Net Profit/Loss: ₦${((data.totalRevenue - data.totalCost - data.totalExpenses) / 100).toLocaleString()}`,
         `--`,
         ``,
         `**Debt & Outstanding Payments Tracker**`,
-        ...data.debtors.map((d) => `${d.name} (${d.phone})\nBalance Owed: R${(d.balanceCents / 100).toLocaleString()}`),
-        `*Total Outstanding Debt: R${(data.totalCredit / 100).toLocaleString()}*`,
+        ...data.debtors.map((d) => `${d.name} (${d.phone})\nBalance Owed: ₦${(d.balanceCents / 100).toLocaleString()}`),
+        `*Total Outstanding Debt: ₦${(data.totalCredit / 100).toLocaleString()}*`,
         ``,
         `**Urgent Restock Alerts**`,
         ...data.lowStockList.map((p) => `${p.name}\n*Current Stock:* ${p.stockLevel} units remaining *(Low Stock Level is ${p.lowStockThreshold})*`),

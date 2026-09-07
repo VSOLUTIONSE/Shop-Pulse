@@ -225,7 +225,7 @@ export default function Inventory() {
                 <TableRow key={product.id}>
                   <TableCell>
                     <div className="font-medium">{product.name}</div>
-                    {product.barcode && <div className="text-xs text-muted-foreground font-mono">{product.barcode}</div>}
+                    {product.barcode && <div className="text-xs text-muted-foreground">{product.barcode}</div>}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className="font-normal">{product.categoryName}</Badge>
@@ -240,7 +240,7 @@ export default function Inventory() {
                   )}
                   <TableCell className="text-center">
                     <Badge variant={product.stockLevel <= 0 ? "destructive" : product.isLowStock ? "outline" : "default"} 
-                      className={product.isLowStock && product.stockLevel > 0 ? "text-orange-500 border-orange-200 bg-orange-50" : "font-mono"}>
+                      className={product.isLowStock && product.stockLevel > 0 ? "text-orange-500 border-orange-200 bg-orange-50" : "font-num tabular-nums"}>
                       {product.stockLevel}
                     </Badge>
                   </TableCell>
@@ -381,7 +381,7 @@ export default function Inventory() {
           <div className="py-4 space-y-4">
             <div className="bg-muted/30 p-3 rounded-xl flex justify-between items-center">
               <span className="font-semibold">{activeProduct?.name}</span>
-              <Badge variant="secondary" className="font-mono">Current: {activeProduct?.stockLevel}</Badge>
+              <Badge variant="secondary" className="font-num tabular-nums">Current: {activeProduct?.stockLevel}</Badge>
             </div>
             <div className="grid gap-2">
               <Label>Quantity Added</Label>
@@ -414,7 +414,7 @@ export default function Inventory() {
           <div className="py-4 space-y-4">
              <div className="bg-muted/30 p-3 rounded-xl flex justify-between items-center">
               <span className="font-semibold">{activeProduct?.name}</span>
-              <Badge variant="secondary" className="font-mono">Current: {activeProduct?.stockLevel}</Badge>
+              <Badge variant="secondary" className="font-num tabular-nums">Current: {activeProduct?.stockLevel}</Badge>
             </div>
             <div className="grid gap-2">
               <Label>Quantity Change (use negative for loss/damage)</Label>

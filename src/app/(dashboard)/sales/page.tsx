@@ -177,7 +177,7 @@ export default function Sales() {
               ) : (
                 sales?.map(sale => (
                   <TableRow key={sale.id} className={sale.status === 'voided' ? 'opacity-60 bg-muted/10' : ''}>
-                    <TableCell className="font-mono font-medium">#{sale.id.toString().padStart(4, '0')}</TableCell>
+                    <TableCell className="font-num tabular-nums font-medium">#{sale.id.toString().padStart(4, '0')}</TableCell>
                     <TableCell className="text-sm">{formatDate(sale.createdAt)}</TableCell>
                     <TableCell>{sale.customerName || <span className="text-muted-foreground italic">Walk-in</span>}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
@@ -185,7 +185,7 @@ export default function Sales() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1 flex-wrap">
-                        {sale.payments.map(p => (
+                        {sale.payments.map((p: any, i: number) => (
                           <Badge key={p.id} variant="secondary" className="text-[10px] capitalize">
                             {p.method}
                           </Badge>

@@ -54,15 +54,15 @@ export const chat = action({
 Key information about the business:
 - Shop Name: ${data.shopName}
 - Total Sales: ${data.totalSales} completed sales
-- Total Revenue: R${(data.totalRevenue / 100).toLocaleString()}
+- Total Revenue: ₦${(data.totalRevenue / 100).toLocaleString()}
 - Products: ${data.productCount} total (${data.lowStockCount} low stock, ${data.outOfStockCount} out of stock)
 - Customers: ${data.customerCount} total
-- Outstanding Credit: R${(data.totalCredit / 100).toLocaleString()}
-- Total Expenses: R${(data.totalExpenses / 100).toLocaleString()}
+- Outstanding Credit: ₦${(data.totalCredit / 100).toLocaleString()}
+- Total Expenses: ₦${(data.totalExpenses / 100).toLocaleString()}
 
 Rules:
 1. Use clear, professional, simple English. Be direct and concise.
-2. Use R for currency (divide cents by 100).
+2. Use Naira (₦) for currency (divide cents by 100).
 3. Be honest but encouraging.
 4. If asked about something outside the available data, say you can only answer based on the business data provided.
 5. Structure your response under clear section headers using "--" as separators between sections.
@@ -92,17 +92,17 @@ Urgent Restock Alerts
 Adapt the sections based on what the user asks. Use only relevant sections for their question.`;
 
     const businessContext = `Current Business Snapshot:
-- Revenue: R${(data.totalRevenue / 100).toLocaleString()} from ${data.totalSales} sales
-- Discounts given: R${(data.totalDiscounts / 100).toLocaleString()}
-- Cash sales: R${(data.cashSales / 100).toLocaleString()}
-- Transfer sales: R${(data.transferSales / 100).toLocaleString()}
-- Card sales: R${(data.cardSales / 100).toLocaleString()}
-- Credit sales: R${(data.creditSales / 100).toLocaleString()}
+- Revenue: ₦${(data.totalRevenue / 100).toLocaleString()} from ${data.totalSales} sales
+- Discounts given: ₦${(data.totalDiscounts / 100).toLocaleString()}
+- Cash sales: ₦${(data.cashSales / 100).toLocaleString()}
+- Transfer sales: ₦${(data.transferSales / 100).toLocaleString()}
+- Card sales: ₦${(data.cardSales / 100).toLocaleString()}
+- Credit sales: ₦${(data.creditSales / 100).toLocaleString()}
 - Product count: ${data.productCount}
 - Low stock items (${data.lowStockCount}): ${data.lowStockList.map(p => `${p.name} (${p.stockLevel} left)`).join(", ")}
-- Debtors: ${data.debtors.map(d => `${d.name} (R${(d.balanceCents / 100).toLocaleString()})`).join(", ")}
-- Recent expenses: ${data.recentExpenses.map(e => `${e.category}: R${(e.amountCents / 100).toLocaleString()}`).join(", ")}
-- Recent sales: ${data.recentSalesData.slice(0, 5).map(s => `#${s.id}: R${(s.totalCents / 100).toLocaleString()}`).join(", ")}`;
+- Debtors: ${data.debtors.map(d => `${d.name} (₦${(d.balanceCents / 100).toLocaleString()})`).join(", ")}
+- Recent expenses: ${data.recentExpenses.map(e => `${e.category}: ₦${(e.amountCents / 100).toLocaleString()}`).join(", ")}
+- Recent sales: ${data.recentSalesData.slice(0, 5).map(s => `#${s.id}: ₦${(s.totalCents / 100).toLocaleString()}`).join(", ")}`;
 
     const result = await generateText({
       model: google("gemini-3.5-flash"),

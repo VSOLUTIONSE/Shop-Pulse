@@ -34,7 +34,7 @@ export function ChatWidget() {
       {open && <ChatPanel onClose={() => setOpen(false)} />}
       <button
         onClick={() => setOpen((p) => !p)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl bg-gradient-to-r from-primary to-indigo-600 text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:bg-primary/90 active:scale-[0.97] transition-[background-color,box-shadow,transform] duration-200 ease-out flex items-center justify-center"
       >
         {open ? (
           <X className="w-6 h-6" />

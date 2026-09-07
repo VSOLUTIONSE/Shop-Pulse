@@ -60,7 +60,6 @@ export default function Reports() {
           size="lg"
           onClick={handleGenerate}
           disabled={generateReport.isPending}
-          className="shadow-md bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 font-bold rounded-xl"
         >
           {generateReport.isPending ? 'Analyzing Data...' : 'Generate New Report'}
         </Button>
@@ -110,7 +109,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:text-primary prose-headings:font-bold prose-p:leading-relaxed prose-li:my-1">
-                  {latestReport.content.split('\n').map((para, i) => (
+                  {latestReport.content.split('\n').map((para: string, i: number) => (
                     <Fragment key={i}>
                       {para}
                       <br />

@@ -84,7 +84,7 @@ export default function Expenses() {
 
   useEffect(() => {
     if (isLoaded && !isOwner) {
-      router.push('/');
+      router.push('/overview');
     }
   }, [isLoaded, isOwner, router]);
 
@@ -130,7 +130,7 @@ export default function Expenses() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-in">
         <div className="md:col-span-2">
           <Card className="border-border/40 shadow-xs h-full">
             <div className="p-4 border-b border-border/40 bg-muted/20 flex gap-4 items-center">
@@ -199,10 +199,10 @@ export default function Expenses() {
         </div>
 
         <div>
-          <Card className="border-border/40 shadow-xs bg-gradient-to-br from-card to-destructive/5">
+          <Card className="border-border/40 shadow-xs">
             <CardContent className="p-6">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Total Logged</h3>
-              <div className="text-4xl font-num font-black text-destructive tracking-tighter">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Total Logged</h3>
+              <div className="text-4xl font-num font-bold text-destructive tracking-tight">
                 {formatMoney(totalExpenses)}
               </div>
               <p className="text-sm text-muted-foreground mt-2 border-t border-border/50 pt-2">
@@ -242,7 +242,7 @@ export default function Expenses() {
               <Input value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="e.g. Electricity bill for July" />
             </div>
             <div className="grid gap-2">
-              <Label>Amount ($)</Label>
+              <Label>Amount (₦)</Label>
               <Input type="number" step="0.01" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} placeholder="0.00" />
             </div>
           </div>

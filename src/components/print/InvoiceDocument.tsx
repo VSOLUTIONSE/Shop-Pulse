@@ -55,7 +55,7 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
               </div>
             ) : (
               <img
-                src="/logo.png"
+                src="/landing/logo.png"
                 alt={data.shop.name}
                 onError={() => setLogoBroken(true)}
                 style={{ maxHeight: '18mm', maxWidth: '60mm', objectFit: 'contain', marginBottom: '2mm' }}
@@ -68,8 +68,8 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '26px', fontWeight: 800, letterSpacing: '2px' }}>INVOICE</div>
             <div style={{ marginTop: '3mm' }}>Invoice No: INV-{String(data.saleId).padStart(4, '0')}</div>
-            <div>Date: {new Date(data.date).toLocaleDateString('en-ZA')}</div>
-            <div>Time: {new Date(data.date).toLocaleTimeString('en-ZA')}</div>
+            <div>Date: {new Date(data.date).toLocaleDateString('en-NG')}</div>
+            <div>Time: {new Date(data.date).toLocaleTimeString('en-NG')}</div>
             <div style={{ textTransform: 'capitalize' }}>Cashier: {data.operatorRole}</div>
           </div>
         </div>

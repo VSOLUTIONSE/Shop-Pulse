@@ -102,7 +102,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 stagger-in">
         <Card className="shadow-xs border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Today&apos;s Revenue</CardTitle>
@@ -117,7 +117,7 @@ export default function Dashboard() {
         </Card>
 
         {isOwner && (
-          <Card className="shadow-xs border-border/40 bg-gradient-to-br from-card to-primary/5">
+          <Card className="shadow-xs border-border/40">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Today&apos;s Profit</CardTitle>
               <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center">
@@ -186,7 +186,7 @@ export default function Dashboard() {
                     />
                     <YAxis
                       width={70}
-                      tickFormatter={(val) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', notation: 'compact', maximumFractionDigits: 1 }).format((val as number) / 100)}
+                      tickFormatter={(val) => new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', notation: 'compact', maximumFractionDigits: 1 }).format((val as number) / 100)}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
@@ -194,7 +194,7 @@ export default function Dashboard() {
                     <Tooltip
                       formatter={(value: any) => [formatMoney(value as number), 'Revenue']}
                       labelFormatter={(label: any) => formatShortDate(label)}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}
+                      contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}
                     />
                     <Area
                       type="monotone"
@@ -203,7 +203,7 @@ export default function Dashboard() {
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorRevenue)"
-                      animationDuration={1000}
+                      isAnimationActive={false}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -228,18 +228,16 @@ export default function Dashboard() {
               {summary?.lowStockProducts && summary.lowStockProducts.length > 0 ? (
                 <div className="space-y-4">
                   {summary.lowStockProducts.slice(0, 4).map((product: any) => (
-                    <div key={product.id} className="flex items-center justify-between group">
-                      <div>
+                    <div key={product.id} className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
                         <p className="font-medium text-sm truncate max-w-[150px] sm:max-w-[200px]" title={product.name}>
                           {product.name}
                         </p>
                         <p className="text-xs text-muted-foreground">{product.categoryName}</p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="destructive" className="font-mono text-xs px-2 py-0.5">
-                          {product.stockLevel} left
-                        </Badge>
-                      </div>
+                      <Badge variant="destructive" className="shrink-0 font-num tabular-nums text-xs px-2 py-0.5">
+                        {product.stockLevel} left
+                      </Badge>
                     </div>
                   ))}
                   {summary.lowStockProducts.length > 4 && (
@@ -269,22 +267,33 @@ export default function Dashboard() {
             <CardContent>
               {summary?.recentSales && summary.recentSales.length > 0 ? (
                 <div className="space-y-4">
-                  {summary.recentSales.slice(0, 4).map((sale: any) => (
-                    <div key={sale.id} className="flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="font-mono text-sm">#{sale.id.toString().padStart(4, '0')}</span>
-                        <span className="text-xs text-muted-foreground">{formatShortDate(sale.createdAt)}</span>
+                  {summary.recentSales.slice(0, 4).map((sale: any) => {
+                    const firstItem = sale.items[0];
+                    const extraCount = sale.items.length - 1;
+                    const method = sale.payments[0]?.method;
+                    return (
+                      <div key={sale.id} className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {sale.customerName ?? firstItem?.productName ?? `Sale #${sale.id}`}
+                            {extraCount > 0 && <span className="text-muted-foreground"> +{extraCount} more</span>}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatShortDate(sale.createdAt)}
+                            {method && ` · ${method.charAt(0).toUpperCase()}${method.slice(1)}`}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end shrink-0">
+                          <span className="font-semibold text-sm font-num tabular-nums">{formatMoney(sale.totalCents)}</span>
+                          {sale.status === 'voided' ? (
+                            <span className="text-xs font-medium text-destructive">Voided</span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground font-num tabular-nums">#{String(sale.id).padStart(4, '0')}</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex flex-col items-end">
-                        <span className="font-semibold text-sm font-num">{formatMoney(sale.totalCents)}</span>
-                        {sale.status === 'voided' ? (
-                          <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-destructive/10 text-destructive border-transparent">Voided</Badge>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">{sale.items.length} items</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-6 text-muted-foreground text-sm">

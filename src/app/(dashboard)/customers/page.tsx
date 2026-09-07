@@ -106,7 +106,7 @@ export default function Customers() {
               <button
                 key={customer.id}
                 onClick={() => setActiveCustomerId(customer.id)}
-                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all duration-200 text-left ${
+                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-colors duration-150 text-left ${
                   activeCustomerId === customer.id
                     ? 'border-primary bg-primary/5 shadow-xs'
                     : 'border-border/40 hover:border-border hover:bg-muted/30'
@@ -124,7 +124,7 @@ export default function Customers() {
                   <span className={`font-num font-bold ${customer.balanceCents > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-muted-foreground'}`}>
                     {formatMoney(customer.balanceCents)}
                   </span>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Balance</span>
+                  <span className="text-[10px] text-muted-foreground">Balance</span>
                 </div>
               </button>
             ))
@@ -145,7 +145,7 @@ export default function Customers() {
           </div>
         ) : customerDetail && (
           <>
-            <div className="p-6 border-b border-border/40 bg-gradient-to-r from-muted/30 to-background flex justify-between items-start">
+            <div className="p-6 border-b border-border/40 bg-muted/30 flex justify-between items-start">
               <div>
                 <h2 className="text-2xl font-bold">{customerDetail.name}</h2>
                 <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
@@ -154,8 +154,8 @@ export default function Customers() {
                 </div>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Current Debt</span>
-                <span className={`text-4xl font-num font-black tracking-tighter ${customerDetail.balanceCents > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-primary'}`}>
+                <span className="text-sm font-medium text-muted-foreground mb-1">Current Debt</span>
+                <span className={`text-4xl font-num font-bold tracking-tight ${customerDetail.balanceCents > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-primary'}`}>
                   {formatMoney(customerDetail.balanceCents)}
                 </span>
                 {customerDetail.balanceCents > 0 && (
@@ -199,7 +199,7 @@ export default function Customers() {
                         <div className="text-xs text-muted-foreground mb-2">{formatDate(entry.createdAt)}</div>
                         {(entry.note || entry.saleId) && (
                           <div className="text-sm border-t border-border/50 pt-2 mt-2">
-                            {entry.saleId && <span className="font-mono text-muted-foreground mr-2">Sale #{entry.saleId.toString().padStart(4, '0')}</span>}
+                            {entry.saleId && <span className="font-num tabular-nums text-muted-foreground mr-2">Sale #{entry.saleId.toString().padStart(4, '0')}</span>}
                             {entry.note}
                           </div>
                         )}
@@ -242,11 +242,11 @@ export default function Customers() {
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="bg-orange-50 dark:bg-orange-950/20 text-orange-800 dark:text-orange-300 p-3 rounded-lg flex justify-between items-center border border-orange-200 dark:border-orange-900/50">
-              <span className="font-semibold text-sm uppercase tracking-wider">Outstanding Balance</span>
+              <span className="font-semibold text-sm">Outstanding Balance</span>
               <span className="font-num font-bold text-xl">{formatMoney(customerDetail?.balanceCents)}</span>
             </div>
             <div className="grid gap-2">
-              <Label>Payment Amount ($)</Label>
+              <Label>Payment Amount (₦)</Label>
               <Input type="number" step="0.01" value={paymentData.amount} onChange={e => setPaymentData({ ...paymentData, amount: e.target.value })} placeholder="0.00" />
             </div>
             <div className="grid gap-2">

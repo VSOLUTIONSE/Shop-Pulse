@@ -4,7 +4,8 @@ import { useAuth, useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Store, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { BrandLogo } from '@/components/brand-logo';
 
 export default function SignInPage() {
   const { signIn, errors, fetchStatus } = useSignIn();
@@ -23,7 +24,7 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (isAuthLoaded && isSignedIn) {
-      window.location.href = '/';
+      window.location.href = '/overview';
     }
   }, [isAuthLoaded, isSignedIn]);
 
@@ -55,7 +56,7 @@ export default function SignInPage() {
       await signIn.finalize({
         navigate: ({ session, decorateUrl }) => {
           if (session?.currentTask) return;
-          const url = decorateUrl('/');
+          const url = decorateUrl('/overview');
           if (url.startsWith('http')) {
             window.location.href = url;
           } else {
@@ -96,7 +97,7 @@ export default function SignInPage() {
       await signIn.finalize({
         navigate: ({ session, decorateUrl }) => {
           if (session?.currentTask) return;
-          const url = decorateUrl('/');
+          const url = decorateUrl('/overview');
           if (url.startsWith('http')) {
             window.location.href = url;
           } else {
@@ -112,14 +113,12 @@ export default function SignInPage() {
 
   if (needsVerify) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-sm">
           <div className="rounded-2xl border border-border/40 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
             <div className="p-8 space-y-6">
               <div className="text-center space-y-2">
-                <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <Store className="h-7 w-7 text-primary" />
-                </div>
+                <BrandLogo className="mx-auto h-12 w-auto" />
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
                   SalesPulse
                 </h1>
@@ -180,14 +179,12 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm">
         <div className="rounded-2xl border border-border/40 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
           <div className="p-8 space-y-6">
             <div className="text-center space-y-2">
-              <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Store className="h-7 w-7 text-primary" />
-              </div>
+              <BrandLogo className="mx-auto h-12 w-auto" />
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 SalesPulse
               </h1>
