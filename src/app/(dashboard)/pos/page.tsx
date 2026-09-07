@@ -190,7 +190,7 @@ export default function POS() {
 
   return (
     <div className=" flex flex-col gap-4 overflow-hidden">
-      <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-card border border-border/50 rounded-xl shadow-sm">
+      <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-card border border-border/40 rounded-2xl shadow-xs">
         <div className="flex items-center gap-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold truncate">
@@ -231,7 +231,7 @@ export default function POS() {
               </div>
               <div className="text-right">
                 <p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">Txns</p>
-                <p className="font-mono font-bold text-xs sm:text-sm">{todaySession?.saleCount ?? 0}</p>
+                <p className="font-num tabular-nums font-bold text-xs sm:text-sm">{todaySession?.saleCount ?? 0}</p>
               </div>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function POS() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 flex-1 min-h-0">
-      <div className="flex-1 flex flex-col min-h-0 min-w-0 bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 bg-card border border-border/40 rounded-2xl shadow-xs overflow-hidden">
         <div className="p-4 border-b border-border/50 bg-muted/20 shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -319,9 +319,9 @@ export default function POS() {
                           {product.stockLevel <= 0 ? (
                             <span className="text-destructive text-xs font-medium">Out of Stock</span>
                           ) : product.isLowStock ? (
-                            <span className="text-orange-500 text-xs font-mono">{product.stockLevel}</span>
+                            <span className="text-orange-500 text-xs font-num tabular-nums">{product.stockLevel}</span>
                           ) : (
-                            <span className="text-muted-foreground text-xs font-mono">{product.stockLevel}</span>
+                            <span className="text-muted-foreground text-xs font-num tabular-nums">{product.stockLevel}</span>
                           )}
                         </td>
                       </tr>
@@ -361,8 +361,8 @@ export default function POS() {
         </div>
       </div>
 
-      <div className="w-full md:w-[380px] lg:w-[420px] flex flex-col bg-card border border-border/50 rounded-xl shadow-sm shrink-0 overflow-hidden">
-        <div className="p-4 border-b border-border/50 bg-primary text-primary-foreground rounded-t-xl shrink-0">
+      <div className="w-full md:w-[380px] lg:w-[420px] flex flex-col bg-card border border-border/40 rounded-2xl shadow-xs shrink-0 overflow-hidden">
+        <div className="p-4 border-b border-border/40 bg-primary text-primary-foreground rounded-t-2xl shrink-0">
           <div className="flex items-center gap-2 font-semibold">
             <ShoppingCart className="w-5 h-5" />
             Current Sale
@@ -382,7 +382,7 @@ export default function POS() {
             ) : (
               <div className="space-y-4">
                 {cart.map(item => (
-                  <div key={item.productId} className="flex flex-col gap-2 p-3 bg-muted/20 border border-border/50 rounded-lg">
+                  <div key={item.productId} className="flex flex-col gap-2 p-3 bg-muted/20 border border-border/40 rounded-xl">
                     <div className="flex justify-between items-start">
                       <span className="font-medium text-sm max-w-[200px] truncate" title={item.name}>{item.name}</span>
                       <button onClick={() => removeFromCart(item.productId)} className="text-muted-foreground hover:text-destructive transition-colors">
@@ -397,7 +397,7 @@ export default function POS() {
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="w-8 text-center font-mono text-sm">{item.quantity}</span>
+                        <span className="w-8 text-center font-num tabular-nums text-sm">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.productId, 1)}
                           className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded"
@@ -434,7 +434,7 @@ export default function POS() {
                   if (isNaN(val)) setDiscountCents(0);
                   else setDiscountCents(Math.round(val * 100));
                 }}
-                className="h-7 md:h-8 text-right font-mono text-xs md:text-sm"
+                className="h-7 md:h-8 text-right font-num tabular-nums text-xs md:text-sm"
                 placeholder="0.00"
               />
             </div>
@@ -466,7 +466,7 @@ export default function POS() {
 
           <div className="py-6 space-y-6">
             <div className="flex justify-center mb-6">
-              <div className="text-4xl font-black font-num tracking-tighter text-primary">
+              <div className="text-4xl font-bold font-num tracking-tight text-primary">
                 {formatMoney(total)}
               </div>
             </div>
@@ -474,7 +474,7 @@ export default function POS() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setPaymentMethod('cash')}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-colors duration-150 ${
                   paymentMethod === 'cash' ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:border-primary/50 text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -483,7 +483,7 @@ export default function POS() {
               </button>
               <button
                 onClick={() => setPaymentMethod('transfer')}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-colors duration-150 ${
                   paymentMethod === 'transfer' ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:border-primary/50 text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -492,7 +492,7 @@ export default function POS() {
               </button>
               <button
                 onClick={() => setPaymentMethod('card')}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-colors duration-150 ${
                   paymentMethod === 'card' ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:border-primary/50 text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -501,7 +501,7 @@ export default function POS() {
               </button>
               <button
                 onClick={() => setPaymentMethod('credit')}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-colors duration-150 ${
                   paymentMethod === 'credit' ? 'border-orange-500 bg-orange-500/5 text-orange-600 dark:text-orange-400' : 'border-border hover:border-orange-500/50 text-muted-foreground hover:text-foreground'
                 }`}
               >

@@ -23,7 +23,8 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
           width: '58mm',
           background: '#fff',
           color: '#000',
-          fontFamily: 'JetBrains Mono, monospace',
+          fontFamily: 'Inter, sans-serif',
+          fontVariantNumeric: 'tabular-nums',
           fontSize: '12px',
           fontWeight: 400,
           lineHeight: 1.5,
@@ -54,7 +55,7 @@ const ReceiptDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
             </div>
           ) : (
             <img
-              src="/logo.png"
+              src="/landing/logo.png"
               alt={data.shop.name}
               onError={() => setLogoBroken(true)}
               style={{ maxHeight: '12mm', maxWidth: '50mm', objectFit: 'contain' }}

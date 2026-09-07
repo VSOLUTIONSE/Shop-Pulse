@@ -1,0 +1,10 @@
+export { Navbar } from "./Navbar";
+export { Hero } from "./Hero";
+export { HowToGetStarted } from "./HowToGetStarted";
+export { WhatYouGet } from "./WhatYouGet";
+export { HowItWorks } from "./HowItWorks";
+export { FeatureShowcase } from "./FeatureShowcase";
+export { Testimonials } from "./Testimonials";
+export { FAQ } from "./FAQ";
+export { Footer } from "./Footer";
+export { LandingPage } from "./LandingPage";

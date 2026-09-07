@@ -49,8 +49,8 @@ export default function Dashboard() {
         <div className="flex items-center gap-3">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
           {todaySession && (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-              todaySession.status === 'open' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-muted text-muted-foreground'
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xl text-xs font-semibold ${
+              todaySession.status === 'open' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-muted text-muted-foreground'
             }`}>
               <span className={`w-1.5 h-1.5 rounded-full ${todaySession.status === 'open' ? 'bg-green-500' : 'bg-muted-foreground'}`} />
               {todaySession.status === 'open' ? 'Sales Open' : 'Sales Closed'}
@@ -58,7 +58,7 @@ export default function Dashboard() {
           )}
         </div>
         <div className="flex flex-col items-center justify-center py-24 text-center max-w-md mx-auto">
-          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+          <div className="w-20 h-20 bg-muted/60 rounded-2xl flex items-center justify-center mb-6">
             <ShoppingBag className="w-10 h-10 text-muted-foreground/40" />
           </div>
           <h2 className="text-xl font-semibold mb-2">{isClosed ? 'Today&apos;s sales are closed' : 'Your sales record is empty'}</h2>
@@ -102,11 +102,11 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <Card className="shadow-sm border-border/50">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 stagger-in">
+        <Card className="shadow-xs border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Today&apos;s Revenue</CardTitle>
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-primary" />
             </div>
           </CardHeader>
@@ -117,10 +117,10 @@ export default function Dashboard() {
         </Card>
 
         {isOwner && (
-          <Card className="shadow-sm border-border/50 bg-gradient-to-br from-card to-primary/5">
+          <Card className="shadow-xs border-border/40">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">Today&apos;s Profit</CardTitle>
-              <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center">
                 <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
               </div>
             </CardHeader>
@@ -132,10 +132,10 @@ export default function Dashboard() {
           </Card>
         )}
 
-        <Card className="shadow-sm border-border/50">
+        <Card className="shadow-xs border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Active Debt</CardTitle>
-            <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center">
               <CreditCard className="w-4 h-4 text-orange-600 dark:text-orange-400" />
             </div>
           </CardHeader>
@@ -145,10 +145,10 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm border-border/50">
+        <Card className="shadow-xs border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Monthly Expenses</CardTitle>
-            <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-destructive/10 flex items-center justify-center">
               <Receipt className="w-4 h-4 text-destructive" />
             </div>
           </CardHeader>
@@ -159,7 +159,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 shadow-sm border-border/50">
+        <Card className="lg:col-span-2 shadow-xs border-border/40">
           <CardHeader>
             <CardTitle>Revenue Trend</CardTitle>
             <CardDescription>Daily revenue for the past week</CardDescription>
@@ -186,7 +186,7 @@ export default function Dashboard() {
                     />
                     <YAxis
                       width={70}
-                      tickFormatter={(val) => `₦${new Intl.NumberFormat('en-NG', { notation: 'compact', maximumFractionDigits: 1 }).format((val as number) / 100)}`}
+                      tickFormatter={(val) => new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', notation: 'compact', maximumFractionDigits: 1 }).format((val as number) / 100)}
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
@@ -194,7 +194,7 @@ export default function Dashboard() {
                     <Tooltip
                       formatter={(value: any) => [formatMoney(value as number), 'Revenue']}
                       labelFormatter={(label: any) => formatShortDate(label)}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}
+                      contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}
                     />
                     <Area
                       type="monotone"
@@ -203,7 +203,7 @@ export default function Dashboard() {
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorRevenue)"
-                      animationDuration={1000}
+                      isAnimationActive={false}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -217,7 +217,7 @@ export default function Dashboard() {
         </Card>
 
         <div className="space-y-6 flex flex-col">
-          <Card className="shadow-sm border-border/50 flex-1">
+          <Card className="shadow-xs border-border/40 flex-1">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-destructive" />
@@ -228,18 +228,16 @@ export default function Dashboard() {
               {summary?.lowStockProducts && summary.lowStockProducts.length > 0 ? (
                 <div className="space-y-4">
                   {summary.lowStockProducts.slice(0, 4).map((product: any) => (
-                    <div key={product.id} className="flex items-center justify-between group">
-                      <div>
+                    <div key={product.id} className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
                         <p className="font-medium text-sm truncate max-w-[150px] sm:max-w-[200px]" title={product.name}>
                           {product.name}
                         </p>
                         <p className="text-xs text-muted-foreground">{product.categoryName}</p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="destructive" className="font-mono text-xs px-2 py-0.5">
-                          {product.stockLevel} left
-                        </Badge>
-                      </div>
+                      <Badge variant="destructive" className="shrink-0 font-num tabular-nums text-xs px-2 py-0.5">
+                        {product.stockLevel} left
+                      </Badge>
                     </div>
                   ))}
                   {summary.lowStockProducts.length > 4 && (
@@ -250,7 +248,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="text-center py-6 text-muted-foreground text-sm flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-muted/60 flex items-center justify-center mb-3">
                     <Package className="w-6 h-6 opacity-50" />
                   </div>
                   Stock levels are healthy
@@ -259,7 +257,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm border-border/50 flex-1">
+          <Card className="shadow-xs border-border/40 flex-1">
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle>Recent Sales</CardTitle>
               <Button variant="ghost" size="icon" asChild className="h-8 w-8 -mr-2">
@@ -269,22 +267,33 @@ export default function Dashboard() {
             <CardContent>
               {summary?.recentSales && summary.recentSales.length > 0 ? (
                 <div className="space-y-4">
-                  {summary.recentSales.slice(0, 4).map((sale: any) => (
-                    <div key={sale.id} className="flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="font-mono text-sm">#{sale.id.toString().padStart(4, '0')}</span>
-                        <span className="text-xs text-muted-foreground">{formatShortDate(sale.createdAt)}</span>
+                  {summary.recentSales.slice(0, 4).map((sale: any) => {
+                    const firstItem = sale.items[0];
+                    const extraCount = sale.items.length - 1;
+                    const method = sale.payments[0]?.method;
+                    return (
+                      <div key={sale.id} className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {sale.customerName ?? firstItem?.productName ?? `Sale #${sale.id}`}
+                            {extraCount > 0 && <span className="text-muted-foreground"> +{extraCount} more</span>}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatShortDate(sale.createdAt)}
+                            {method && ` · ${method.charAt(0).toUpperCase()}${method.slice(1)}`}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end shrink-0">
+                          <span className="font-semibold text-sm font-num tabular-nums">{formatMoney(sale.totalCents)}</span>
+                          {sale.status === 'voided' ? (
+                            <span className="text-xs font-medium text-destructive">Voided</span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground font-num tabular-nums">#{String(sale.id).padStart(4, '0')}</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex flex-col items-end">
-                        <span className="font-semibold text-sm font-num">{formatMoney(sale.totalCents)}</span>
-                        {sale.status === 'voided' ? (
-                          <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-destructive/10 text-destructive border-transparent">Voided</Badge>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">{sale.items.length} items</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-6 text-muted-foreground text-sm">

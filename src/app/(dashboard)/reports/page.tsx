@@ -27,7 +27,7 @@ export default function Reports() {
   if (!isOwner) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-center max-w-md mx-auto">
-        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-6">
+        <div className="w-16 h-16 bg-muted/60 rounded-2xl flex items-center justify-center mb-6">
           <Lock className="w-8 h-8 text-muted-foreground" />
         </div>
         <h2 className="text-2xl font-bold mb-2">Access Restricted</h2>
@@ -60,15 +60,14 @@ export default function Reports() {
           size="lg"
           onClick={handleGenerate}
           disabled={generateReport.isPending}
-          className="shadow-md bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 font-bold"
         >
           {generateReport.isPending ? 'Analyzing Data...' : 'Generate New Report'}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-border/50 shadow-sm flex flex-col h-[calc(100vh-14rem)]">
-          <CardHeader className="border-b border-border/50 bg-muted/10 pb-4">
+        <Card className="lg:col-span-2 border-border/40 shadow-xs flex flex-col h-[calc(100vh-14rem)]">
+          <CardHeader className="border-b border-border/40 bg-muted/10 pb-4">
             <CardTitle>{latestReport?.title ?? 'Latest Analysis'}</CardTitle>
             {latestReport && (
               <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
@@ -110,7 +109,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:text-primary prose-headings:font-bold prose-p:leading-relaxed prose-li:my-1">
-                  {latestReport.content.split('\n').map((para, i) => (
+                  {latestReport.content.split('\n').map((para: string, i: number) => (
                     <Fragment key={i}>
                       {para}
                       <br />
@@ -123,15 +122,15 @@ export default function Reports() {
         </Card>
 
         <div className="flex flex-col gap-6">
-          <Card className="border-border/50 shadow-sm flex-1">
-            <CardHeader className="pb-3 border-b border-border/50">
+          <Card className="border-border/40 shadow-xs flex-1">
+            <CardHeader className="pb-3 border-b border-border/40">
               <CardTitle className="text-base">History</CardTitle>
             </CardHeader>
             <ScrollArea className="h-[calc(100vh-20rem)]">
               <CardContent className="p-0">
-                <div className="divide-y divide-border/50">
+                <div className="divide-y divide-border/40">
                   {reports?.slice(1).map(report => (
-                    <div key={report.id} className="p-4 hover:bg-muted/20 transition-colors">
+                    <div key={report.id} className="p-4 hover:bg-muted/20 transition-colors duration-200">
                       <div className="flex items-center gap-3 mb-1">
                         <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
                         <span className="font-medium text-sm">{formatDate(report.createdAt)}</span>

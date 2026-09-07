@@ -181,8 +181,8 @@ export default function Inventory() {
         </div>
       </div>
 
-      <Card className="border-border/50 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-border/50 bg-muted/20">
+      <Card className="border-border/40 shadow-xs overflow-hidden">
+        <div className="p-4 border-b border-border/40 bg-muted/20">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
@@ -225,7 +225,7 @@ export default function Inventory() {
                 <TableRow key={product.id}>
                   <TableCell>
                     <div className="font-medium">{product.name}</div>
-                    {product.barcode && <div className="text-xs text-muted-foreground font-mono">{product.barcode}</div>}
+                    {product.barcode && <div className="text-xs text-muted-foreground">{product.barcode}</div>}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className="font-normal">{product.categoryName}</Badge>
@@ -240,7 +240,7 @@ export default function Inventory() {
                   )}
                   <TableCell className="text-center">
                     <Badge variant={product.stockLevel <= 0 ? "destructive" : product.isLowStock ? "outline" : "default"} 
-                      className={product.isLowStock && product.stockLevel > 0 ? "text-orange-500 border-orange-200 bg-orange-50" : "font-mono"}>
+                      className={product.isLowStock && product.stockLevel > 0 ? "text-orange-500 border-orange-200 bg-orange-50" : "font-num tabular-nums"}>
                       {product.stockLevel}
                     </Badge>
                   </TableCell>
@@ -327,7 +327,7 @@ export default function Inventory() {
               <div className="grid gap-2">
                 <Label>Category</Label>
                 <select 
-                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="flex h-10 w-full items-center justify-between rounded-xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   value={formData.categoryId}
                   onChange={e => setFormData({...formData, categoryId: e.target.value})}
                 >
@@ -342,12 +342,12 @@ export default function Inventory() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>Selling Price (₦)</Label>
+                <Label>Selling Price (R)</Label>
                 <Input type="number" step="0.01" value={formData.sellingPrice} onChange={e => setFormData({...formData, sellingPrice: e.target.value})} placeholder="0.00" />
               </div>
               {isOwner && (
                 <div className="grid gap-2">
-                  <Label>Cost Price (₦)</Label>
+                  <Label>Cost Price (R)</Label>
                   <Input type="number" step="0.01" value={formData.costPrice} onChange={e => setFormData({...formData, costPrice: e.target.value})} placeholder="0.00" />
                 </div>
               )}
@@ -379,9 +379,9 @@ export default function Inventory() {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
-            <div className="bg-muted/30 p-3 rounded-lg flex justify-between items-center">
+            <div className="bg-muted/30 p-3 rounded-xl flex justify-between items-center">
               <span className="font-semibold">{activeProduct?.name}</span>
-              <Badge variant="secondary" className="font-mono">Current: {activeProduct?.stockLevel}</Badge>
+              <Badge variant="secondary" className="font-num tabular-nums">Current: {activeProduct?.stockLevel}</Badge>
             </div>
             <div className="grid gap-2">
               <Label>Quantity Added</Label>
@@ -389,7 +389,7 @@ export default function Inventory() {
             </div>
             {isOwner && (
               <div className="grid gap-2">
-                <Label>New Cost Price (₦) (Updates catalog)</Label>
+                <Label>New Cost Price (R) (Updates catalog)</Label>
                 <Input type="number" step="0.01" value={restockData.costPrice} onChange={e => setRestockData({...restockData, costPrice: e.target.value})} placeholder="0.00" />
               </div>
             )}
@@ -412,9 +412,9 @@ export default function Inventory() {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
-             <div className="bg-muted/30 p-3 rounded-lg flex justify-between items-center">
+             <div className="bg-muted/30 p-3 rounded-xl flex justify-between items-center">
               <span className="font-semibold">{activeProduct?.name}</span>
-              <Badge variant="secondary" className="font-mono">Current: {activeProduct?.stockLevel}</Badge>
+              <Badge variant="secondary" className="font-num tabular-nums">Current: {activeProduct?.stockLevel}</Badge>
             </div>
             <div className="grid gap-2">
               <Label>Quantity Change (use negative for loss/damage)</Label>
@@ -465,7 +465,7 @@ export default function Inventory() {
               <Input value={categoryName} onChange={e => setCategoryName(e.target.value)} placeholder="New Category Name" />
               <Button onClick={handleCategorySubmit} disabled={!categoryName || createCategory.isPending}>Add</Button>
             </div>
-            <div className="border border-border/50 rounded-lg divide-y divide-border/50 max-h-60 overflow-auto">
+            <div className="border border-border/40 rounded-xl divide-y divide-border/40 max-h-60 overflow-auto">
               {categories?.map(c => (
                 <div key={c.id} className="p-3 text-sm flex justify-between items-center">
                   <span>{c.name}</span>

@@ -4,7 +4,8 @@ import { useSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Store, Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { BrandLogo } from '@/components/brand-logo';
 
 export default function SignUpPage() {
   const { signUp, errors, fetchStatus } = useSignUp();
@@ -67,7 +68,7 @@ export default function SignUpPage() {
       await signUp.finalize({
         navigate: ({ session, decorateUrl }) => {
           if (session?.currentTask) return;
-          const url = decorateUrl('/');
+          const url = decorateUrl('/overview');
           if (url.startsWith('http')) {
             window.location.href = url;
           } else {
@@ -83,14 +84,12 @@ export default function SignUpPage() {
 
   if (!needsVerification) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-sm">
-          <div className="rounded-xl border border-border/50 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
+          <div className="rounded-2xl border border-border/40 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
             <div className="p-8 space-y-6">
               <div className="text-center space-y-2">
-                <div className="mx-auto h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Store className="h-7 w-7 text-primary" />
-                </div>
+                <BrandLogo className="mx-auto h-12 w-auto" />
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
                   SalesPulse
                 </h1>
@@ -112,7 +111,7 @@ export default function SignUpPage() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-10 px-3 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                    className="w-full h-10 px-3 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                   />
                   {fieldError.emailAddress && (
                     <p className="text-xs text-destructive">{fieldError.emailAddress.message}</p>
@@ -132,7 +131,7 @@ export default function SignUpPage() {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full h-10 px-3 pr-10 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                      className="w-full h-10 px-3 pr-10 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                     />
                     <button
                       type="button"
@@ -161,7 +160,7 @@ export default function SignUpPage() {
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full h-10 px-3 pr-10 rounded-lg border border-border/50 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                      className="w-full h-10 px-3 pr-10 rounded-xl border border-border/40 bg-background text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                     />
                     <button
                       type="button"
@@ -212,14 +211,12 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm">
         <div className="rounded-xl border border-border/50 bg-card shadow-2xl shadow-primary/5 overflow-hidden">
           <div className="p-8 space-y-6">
             <div className="text-center space-y-2">
-              <div className="mx-auto h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Store className="h-7 w-7 text-primary" />
-              </div>
+              <BrandLogo className="mx-auto h-12 w-auto" />
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
                 SalesPulse
               </h1>

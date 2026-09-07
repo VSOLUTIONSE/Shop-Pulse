@@ -1,6 +1,6 @@
 # SalesPulse
 
-Point of Sale & Inventory Management System with role-based access for Nigerian retail shops. Built with Next.js, Convex, Clerk, AI SDK and Tailwind CSS.
+Point of Sale & Inventory Management System with role-based access for Nigerian retail shops. Built with Next.js, Convex, Clerk, AI SDK and Tailwind CSS. All monetary values are displayed in Naira (₦).
 
 ## Features
 

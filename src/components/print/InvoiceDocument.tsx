@@ -55,7 +55,7 @@ const InvoiceDocument = forwardRef<HTMLDivElement, { data: PrintData }>(
               </div>
             ) : (
               <img
-                src="/logo.png"
+                src="/landing/logo.png"
                 alt={data.shop.name}
                 onError={() => setLogoBroken(true)}
                 style={{ maxHeight: '18mm', maxWidth: '60mm', objectFit: 'contain', marginBottom: '2mm' }}
